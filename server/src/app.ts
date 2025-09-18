@@ -1,12 +1,18 @@
 import express, { Application } from "express";
 import routes from "./routes";
+import dotenv from "dotenv";
+import connectDB from "./mongoose/config/conn";
+
+// Load env vars
+dotenv.config();
 
 const app: Application = express();
 
-// Middleware
 app.use(express.json());
 
-// Routes
 app.use("/", routes);
+
+const MONGO_URI = process.env.MONGO_URI || "";
+connectDB(MONGO_URI);
 
 export default app;
