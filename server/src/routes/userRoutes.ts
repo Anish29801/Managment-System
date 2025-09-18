@@ -1,8 +1,12 @@
 import { Router, Request, Response } from "express";
 import { User } from "../model/User";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const router = Router();
+
+// 🔑 JWT secret (store this in .env file for security!)
+const JWT_SECRET = process.env.JWT_SECRET ;
 
 // ✅ Create user (POST)
 router.post("/user", async (req: Request, res: Response) => {
@@ -33,8 +37,48 @@ router.post("/user", async (req: Request, res: Response) => {
   }
 });
 
+// ✅ Sign In (POST /login)
+router.post("/login", async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    // check if email exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    // check password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    // generate token
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Login failed", error });
+  }
+});
+
 // ✅ Get all users
-router.get("/user", async (req: Request, res: Response) => {
+router.get("/user", async (_req: Request, res: Response) => {
   try {
     const users = await User.find();
     res.status(200).json(users);
