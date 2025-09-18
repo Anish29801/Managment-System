@@ -1,12 +1,6 @@
-import { Schema, model, Document, Types } from "mongoose";
+import { Schema, model} from "mongoose";
+import { ISearchIndex } from "../types";
 
-export interface ISearchIndex extends Document {
-  taskId?: Types.ObjectId;
-  subtaskId?: Types.ObjectId;
-  title: string;
-  content?: string;
-  createdAt: Date;
-}
 
 const searchIndexSchema = new Schema<ISearchIndex>(
   {

@@ -1,16 +1,5 @@
-import { Schema, model, Document, Types } from "mongoose";
-
-export interface ITask extends Document {
-  title: string;
-  description?: string;
-  status: "pending" | "inprogress" | "completed";
-  priority: "low" | "medium" | "high";
-  dueDate?: Date;
-  createdBy: Types.ObjectId;
-  subtasks: Types.ObjectId[];
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { Schema, model } from "mongoose";
+import { ITask } from "../types";
 
 const taskSchema = new Schema<ITask>(
   {

@@ -1,13 +1,6 @@
-import { Schema, model, Document, Types } from "mongoose";
+import { Schema, model} from "mongoose";
+import { IActivity } from "../types";
 
-export interface IActivity extends Document {
-  taskId: Types.ObjectId;
-  userId: Types.ObjectId;
-  action: string;
-  oldValue?: string;
-  newValue?: string;
-  createdAt: Date;
-}
 
 const activitySchema = new Schema<IActivity>(
   {

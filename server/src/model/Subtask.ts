@@ -1,12 +1,5 @@
-import { Schema, model, Document, Types } from "mongoose";
-
-export interface ISubtask extends Document {
-  taskId: Types.ObjectId;
-  title: string;
-  status: "pending" | "inprogress" | "completed";
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { Schema, model} from "mongoose";
+import { ISubtask } from "../types";
 
 const subtaskSchema = new Schema<ISubtask>(
   {
