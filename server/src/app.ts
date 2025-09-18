@@ -1,7 +1,7 @@
 import express, { Application } from "express";
 import routes from "./routes";
 import dotenv from "dotenv";
-import connectDB from "./mongoose/config/conn";
+import connectDB from "./model/config/conn";
 
 // Load env vars
 dotenv.config();
