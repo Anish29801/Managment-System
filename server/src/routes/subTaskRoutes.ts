@@ -4,7 +4,7 @@ import { Subtask } from "../model/Subtask";
 const router = Router();
 
 // ✅ Create Subtask
-router.post("/subtask", async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   try {
     const subtask = new Subtask(req.body);
     await subtask.save();
@@ -15,7 +15,7 @@ router.post("/subtask", async (req: Request, res: Response) => {
 });
 
 // ✅ Get All Subtasks
-router.get("/subtask", async (_req: Request, res: Response) => {
+router.get("/", async (_req: Request, res: Response) => {
   try {
     const subtasks = await Subtask.find().populate("taskId");
     res.json(subtasks);
@@ -25,7 +25,7 @@ router.get("/subtask", async (_req: Request, res: Response) => {
 });
 
 // ✅ Get One Subtask by ID
-router.get("/subtask/:id", async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
   try {
     const subtask = await Subtask.findById(req.params.id).populate("taskId");
     if (!subtask) return res.status(404).json({ error: "Subtask not found" });
@@ -36,7 +36,7 @@ router.get("/subtask/:id", async (req: Request, res: Response) => {
 });
 
 // ✅ Update Subtask
-router.put("/subtask/:id", async (req: Request, res: Response) => {
+router.put("/:id", async (req: Request, res: Response) => {
   try {
     const subtask = await Subtask.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!subtask) return res.status(404).json({ error: "Subtask not found" });
@@ -47,7 +47,7 @@ router.put("/subtask/:id", async (req: Request, res: Response) => {
 });
 
 // ✅ Delete Subtask
-router.delete("/subtask/:id", async (req: Request, res: Response) => {
+router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const subtask = await Subtask.findByIdAndDelete(req.params.id);
     if (!subtask) return res.status(404).json({ error: "Subtask not found" });

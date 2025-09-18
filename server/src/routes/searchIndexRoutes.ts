@@ -6,7 +6,7 @@ import {Subtask} from "../model/Subtask";
 const router = Router();
 
 // 🔍 Search across Users, Tasks, Subtasks
-router.get("/search", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
     const { q } = req.query;
     if (!q || typeof q !== "string") {

@@ -4,7 +4,7 @@ import { Task } from "../model/Task";
 const router = Router();
 
 // ✅ Create task (POST)
-router.post("/task", async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   try {
     const { title, description, status, assignedTo, dueDate } = req.body;
 
@@ -29,7 +29,7 @@ router.post("/task", async (req: Request, res: Response) => {
 });
 
 // ✅ Get all tasks
-router.get("/task", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
     const tasks = await Task.find().populate("assignedTo", "name email");
     res.status(200).json(tasks);
@@ -40,7 +40,7 @@ router.get("/task", async (req: Request, res: Response) => {
 });
 
 // ✅ Get one task by ID
-router.get("/task/:id", async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
   try {
     const task = await Task.findById(req.params.id).populate("assignedTo", "name email");
 
@@ -56,7 +56,7 @@ router.get("/task/:id", async (req: Request, res: Response) => {
 });
 
 // ✅ Update task (PUT)
-router.put("/task/:id", async (req: Request, res: Response) => {
+router.put("/:id", async (req: Request, res: Response) => {
   try {
     const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
@@ -72,7 +72,7 @@ router.put("/task/:id", async (req: Request, res: Response) => {
 });
 
 // ✅ Partially update task (PATCH)
-router.patch("/task/:id", async (req: Request, res: Response) => {
+router.patch("/:id", async (req: Request, res: Response) => {
   try {
     const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
@@ -88,7 +88,7 @@ router.patch("/task/:id", async (req: Request, res: Response) => {
 });
 
 // ✅ Delete task
-router.delete("/task/:id", async (req: Request, res: Response) => {
+router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const deletedTask = await Task.findByIdAndDelete(req.params.id);
 

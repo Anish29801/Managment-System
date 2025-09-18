@@ -6,10 +6,10 @@ import jwt from "jsonwebtoken";
 const router = Router();
 
 // 🔑 JWT secret (store this in .env file for security!)
-const JWT_SECRET = process.env.JWT_SECRET ;
+const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
 
 // ✅ Create user (POST)
-router.post("/user", async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   try {
     const { name, email, password, role } = req.body;
 
@@ -78,7 +78,7 @@ router.post("/login", async (req: Request, res: Response) => {
 });
 
 // ✅ Get all users
-router.get("/user", async (_req: Request, res: Response) => {
+router.get("/", async (_req: Request, res: Response) => {
   try {
     const users = await User.find();
     res.status(200).json(users);
@@ -89,7 +89,7 @@ router.get("/user", async (_req: Request, res: Response) => {
 });
 
 // ✅ Get one user by ID
-router.get("/user/:id", async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
   try {
     const user = await User.findById(req.params.id);
 
@@ -105,7 +105,7 @@ router.get("/user/:id", async (req: Request, res: Response) => {
 });
 
 // ✅ Update entire user (PUT)
-router.put("/user/:id", async (req: Request, res: Response) => {
+router.put("/:id", async (req: Request, res: Response) => {
   try {
     const { name, email, password, role } = req.body;
     let updateData: any = { name, email, role };
@@ -128,7 +128,7 @@ router.put("/user/:id", async (req: Request, res: Response) => {
 });
 
 // ✅ Partially update user (PATCH)
-router.patch("/user/:id", async (req: Request, res: Response) => {
+router.patch("/:id", async (req: Request, res: Response) => {
   try {
     const updateData: any = { ...req.body };
 
@@ -150,7 +150,7 @@ router.patch("/user/:id", async (req: Request, res: Response) => {
 });
 
 // ✅ Delete user
-router.delete("/user/:id", async (req: Request, res: Response) => {
+router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
 

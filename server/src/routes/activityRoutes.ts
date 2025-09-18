@@ -4,7 +4,7 @@ import { Activity } from "../model/Activity";
 const router = Router();
 
 // ✅ Create Activity
-router.post("/activity", async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   try {
     const activity = new Activity(req.body);
     await activity.save();
@@ -15,7 +15,7 @@ router.post("/activity", async (req: Request, res: Response) => {
 });
 
 // ✅ Get All Activities
-router.get("/activity", async (_req: Request, res: Response) => {
+router.get("/", async (_req: Request, res: Response) => {
   try {
     const activities = await Activity.find()
       .populate("userId", "name email")
@@ -28,7 +28,7 @@ router.get("/activity", async (_req: Request, res: Response) => {
 });
 
 // ✅ Get One Activity by ID
-router.get("/activity/:id", async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
   try {
     const activity = await Activity.findById(req.params.id)
       .populate("userId", "name email")
@@ -43,7 +43,7 @@ router.get("/activity/:id", async (req: Request, res: Response) => {
 });
 
 // ✅ Delete Activity
-router.delete("/activity/:id", async (req: Request, res: Response) => {
+router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const activity = await Activity.findByIdAndDelete(req.params.id);
     if (!activity) return res.status(404).json({ error: "Activity not found" });
