@@ -1,5 +1,4 @@
 import { Router, Request, Response } from "express";
-import { User } from "../model/User";
 import {Task} from "../model/Task";
 import {Subtask} from "../model/Subtask";
 
@@ -15,8 +14,7 @@ router.get("/", async (req: Request, res: Response) => {
 
     const regex = new RegExp(q, "i");
 
-    const [users, tasks, subtasks] = await Promise.all([
-      User.find({ name: regex }),
+    const [tasks, subtasks] = await Promise.all([
       Task.find({ title: regex }),
       Subtask.find({ title: regex }),
     ]);
@@ -24,7 +22,6 @@ router.get("/", async (req: Request, res: Response) => {
     res.json({
       query: q,
       results: {
-        users,
         tasks,
         subtasks,
         
