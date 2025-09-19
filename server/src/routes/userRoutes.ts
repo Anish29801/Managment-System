@@ -62,14 +62,6 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/logout", (_req: Request, res: Response) => {
-  res.status(200).json({ message: "User logged out successfully (clear token on client)" });
-});
-
-router.post("/signout", (_req: Request, res: Response) => {
-  res.status(200).json({ message: "User signed out successfully" });
-});
-
 router.get("/", async (_req: Request, res: Response) => {
   try {
     const users = await User.find().select("-password");
