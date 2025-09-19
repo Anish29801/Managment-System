@@ -11,11 +11,13 @@ router.post("/signup", async (req: Request, res: Response) => {
     const { name, email, password, role } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({ message: "Name, email, and password are required" });
+      return res.status(400).json({ error: "Name, email, and password are required" });
     }
 
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "Email already registered" });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already registered" });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -23,20 +25,24 @@ router.post("/signup", async (req: Request, res: Response) => {
       name,
       email,
       password: hashedPassword,
-      role: role || "user"
+      role: role || "user",
     });
 
     const savedUser = await newUser.save();
-    res.status(201).json({
+
+    const token = jwt.sign({ id: savedUser._id, email: savedUser.email }, JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    return res.status(201).json({
       message: "User registered successfully",
-      user: { id: savedUser._id, name: savedUser.name, email: savedUser.email }
+      token,
+      user: { id: savedUser._id, name: savedUser.name, email: savedUser.email },
     });
   } catch (error) {
-    res.status(500).json({ message: "Signup failed", error });
+    console.error("Signup Error:", error);
+    return res.status(500).json({ error: "Signup failed" });
   }
-});
-router.get("/test-users", (req, res) => {
-  res.json({ message: "Users route is working" });
 });
 
 router.post("/login", async (req: Request, res: Response) => {
