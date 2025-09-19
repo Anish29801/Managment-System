@@ -35,6 +35,9 @@ router.post("/signup", async (req: Request, res: Response) => {
     res.status(500).json({ message: "Signup failed", error });
   }
 });
+router.get("/test-users", (req, res) => {
+  res.json({ message: "Users route is working" });
+});
 
 router.post("/login", async (req: Request, res: Response) => {
   try {
