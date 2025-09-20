@@ -3,31 +3,41 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { z, ZodError } from "zod";
-import { Task } from "../type";
 import { User } from "../context/AuthContext";
 
 interface TaskFormProps {
   user: User;
-  task?: Task | null; // If provided, form is in update mode
   onClose: () => void;
   onTaskAdded: () => void;
+  task?: Task | null;
 }
 
-// Zod validation schema
+export interface Task {
+  _id: string;
+  title: string;
+  description?: string;
+  status: "pending" | "inprogress" | "completed";
+  priority: "low" | "medium" | "high";
+  dueDate?: string;
+  subTasks?: string[];
+}
+
 const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  status: z.enum(["pending", "inprogress", "completed"]).default("pending"),
-  priority: z.enum(["low", "medium", "high"]).default("medium"),
+  status: z.enum(["pending", "inprogress", "completed"]),
+  priority: z.enum(["low", "medium", "high"]),
   dueDate: z.string().optional(),
+  subTasks: z.string().optional(),
 });
 
-export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded }) => {
+const TaskForm: React.FC<TaskFormProps> = ({ user, onClose, onTaskAdded, task }) => {
   const [title, setTitle] = useState(task?.title || "");
   const [description, setDescription] = useState(task?.description || "");
   const [status, setStatus] = useState<"pending" | "inprogress" | "completed">(task?.status || "pending");
   const [priority, setPriority] = useState<"low" | "medium" | "high">(task?.priority || "medium");
   const [dueDate, setDueDate] = useState(task?.dueDate ? task.dueDate.split("T")[0] : "");
+  const [subTasks, setSubTasks] = useState(task?.subTasks?.join(";") || "");
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,22 +45,28 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
     setError(null);
 
     try {
-      taskSchema.parse({ title, description, status, priority, dueDate });
+      taskSchema.parse({ title, description, status, priority, dueDate, subTasks });
 
-      if (task) {
-        // Update task
-        await axios.put(
-          `http://localhost:8000/tasks/${task._id}`,
-          { title, description, status, priority, dueDate },
-          { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-        );
+      const payload = {
+        title,
+        description,
+        status,
+        priority,
+        dueDate: dueDate || undefined,
+        subTasks: subTasks ? subTasks.split(";").map((s) => s.trim()) : [],
+        createdBy: user.id,
+      };
+
+      if (task?._id) {
+        // Update existing task
+        await axios.put(`http://localhost:8000/tasks/${task._id}`, payload, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
       } else {
-        // Create task
-        await axios.post(
-          "http://localhost:8000/tasks",
-          { title, description, status, priority, dueDate, createdBy: user.id },
-          { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-        );
+        // Create new task
+        await axios.post("http://localhost:8000/tasks", payload, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
       }
 
       onTaskAdded();
@@ -65,7 +81,8 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
   return (
     <div className="bg-gray-800 p-6 rounded-md relative">
       <button onClick={onClose} className="absolute top-2 right-2 text-white font-bold">X</button>
-      <h2 className="text-xl font-bold mb-4 text-white">{task ? "Update Task" : "Add Task"}</h2>
+      <h2 className="text-xl font-bold mb-4 text-white">{task?._id ? "Update Task" : "Add Task"}</h2>
+
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
           <label className="text-gray-300">Title</label>
@@ -77,6 +94,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
             required
           />
         </div>
+
         <div>
           <label className="text-gray-300">Description</label>
           <textarea
@@ -85,6 +103,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
             className="w-full mt-1 px-3 py-2 bg-gray-700 text-white rounded-md"
           />
         </div>
+
         <div>
           <label className="text-gray-300">Status</label>
           <select
@@ -97,6 +116,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
             <option value="completed">Completed</option>
           </select>
         </div>
+
         <div>
           <label className="text-gray-300">Priority</label>
           <select
@@ -109,6 +129,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
             <option value="high">High</option>
           </select>
         </div>
+
         <div>
           <label className="text-gray-300">Due Date</label>
           <input
@@ -118,12 +139,28 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
             className="w-full mt-1 px-3 py-2 bg-gray-700 text-white rounded-md"
           />
         </div>
+
+        <div>
+          <label className="text-gray-300">Sub Tasks (separate by ;)</label>
+          <textarea
+            value={subTasks}
+            onChange={(e) => setSubTasks(e.target.value)}
+            className="w-full mt-1 px-3 py-2 bg-gray-700 text-white rounded-md resize-y"
+            placeholder="Subtask1;
+                        Subtask2;
+                        Subtask3"
+            rows={4}
+          />
+
+        </div>
+
         {error && <p className="text-red-500 text-sm">{error}</p>}
+
         <button
           type="submit"
           className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
         >
-          {task ? "Update Task" : "Create Task"}
+          {task?._id ? "Update Task" : "Create Task"}
         </button>
       </form>
     </div>
