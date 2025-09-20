@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export interface User {
   id: string;
   name: string;
@@ -12,4 +14,12 @@ export interface Task {
   dueDate?: string;
   createdBy: string;
    subtasks: string[];
+}
+export interface SubtaskDTO {
+  _id?: Types.ObjectId | string; // Optional, because new subtasks may not have an ID yet
+  title: string;
+  status?: "pending" | "inprogress" | "completed"; // optional for creation
+  createdAt?: Date;
+  updatedAt?: Date;
+  completed?: boolean; // optional boolean for frontend convenience
 }

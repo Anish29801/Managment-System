@@ -2,37 +2,78 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { FaSearch } from "react-icons/fa";
 import { useAuth } from "./context/AuthContext";
 import TaskForm from "./components/TaskForm";
 import { TaskSection } from "./components/TaskSection";
-import { Task } from "./type";
+import { Task, SubtaskDTO } from "./type";
 
 export default function Dashboard() {
   const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    if (user) fetchTasks();
-    else setTasks([]);
-  }, [user]);
-
+  // Fetch all tasks
   const fetchTasks = async () => {
     setLoading(true);
     try {
       const res = await axios.get<Task[]>("http://localhost:8000/tasks", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      setTasks(res.data);
+      const data = Array.isArray(res.data) ? res.data : [];
+      setTasks(data);
+      setFilteredTasks(data);
     } catch (err: any) {
       console.error("Failed to fetch tasks:", err.response?.data || err.message);
       setTasks([]);
+      setFilteredTasks([]);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user) fetchTasks();
+    else {
+      setTasks([]);
+      setFilteredTasks([]);
+    }
+  }, [user]);
+
+  // Live search with debounce
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      if (!searchQuery.trim()) {
+        setFilteredTasks(tasks);
+      } else {
+        const lowerQuery = searchQuery.toLowerCase();
+        setFilteredTasks(
+          tasks.filter((t) => {
+            const subtasksMatch = Array.isArray(t.subtasks)
+              ? t.subtasks.some((s) => {
+                  if (typeof s === "object" && s !== null && "title" in s) {
+                    return (s as SubtaskDTO).title.toLowerCase().includes(lowerQuery);
+                  }
+                  return false;
+                })
+              : false;
+
+            return (
+              t.title.toLowerCase().includes(lowerQuery) ||
+              t.description?.toLowerCase().includes(lowerQuery) ||
+              subtasksMatch
+            );
+          })
+        );
+      }
+    }, 300);
+
+    return () => clearTimeout(delay);
+  }, [searchQuery, tasks]);
 
   const handleAddClick = () => {
     setEditingTask(null);
@@ -56,9 +97,9 @@ export default function Dashboard() {
     }
   };
 
-  const pendingTasks = tasks.filter((t) => t.status === "pending");
-  const inProgressTasks = tasks.filter((t) => t.status === "inprogress");
-  const completedTasks = tasks.filter((t) => t.status === "completed");
+  const pendingTasks = filteredTasks.filter((t) => t.status === "pending");
+  const inProgressTasks = filteredTasks.filter((t) => t.status === "inprogress");
+  const completedTasks = filteredTasks.filter((t) => t.status === "completed");
 
   const greeting = user
     ? `Hi, ${user.name} Good ${getTimeOfDay()}`
@@ -74,17 +115,32 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <h1 className="text-2xl font-bold">{greeting}</h1>
-        <button
-          onClick={handleAddClick}
-          disabled={!user}
-          className={`px-4 py-2 rounded-md ${
-            user ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-600 cursor-not-allowed"
-          }`}
-        >
-          Add Task
-        </button>
+
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          {/* Search Box */}
+          <div className="relative w-full md:w-64">
+            <input
+              type="text"
+              placeholder="Search tasks..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
+          </div>
+
+          <button
+            onClick={handleAddClick}
+            disabled={!user}
+            className={`px-4 py-2 rounded-md ${
+              user ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-600 cursor-not-allowed"
+            }`}
+          >
+            Add Task
+          </button>
+        </div>
       </div>
 
       {loading ? (
