@@ -10,15 +10,15 @@ export default function Dashboard() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingTask, setEditingTask] = useState<any | null>(null);
 
-  // Fetch tasks whenever user changes (login/logout)
   useEffect(() => {
     if (user) fetchTasks();
     else {
       setTasks([]);
       setLoading(false);
     }
-  }, [user]); // <--- dependency ensures UI updates on login
+  }, [user]);
 
   const fetchTasks = async () => {
     setLoading(true);
@@ -29,7 +29,7 @@ export default function Dashboard() {
       setTasks(res.data);
     } catch (err: any) {
       console.error("Failed to fetch tasks:", err.response?.data || err.message);
-      setTasks([]); // clear tasks if fetch fails
+      setTasks([]);
     } finally {
       setLoading(false);
     }
@@ -37,12 +37,30 @@ export default function Dashboard() {
 
   const handleAddClick = () => {
     if (!user) return;
+    setEditingTask(null);
+    setShowAddForm(true);
+  };
+
+  const handleDelete = async (taskId: string) => {
+    if (!user) return;
+    try {
+      await axios.delete(`http://localhost:8000/tasks/${taskId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      fetchTasks(); // refresh tasks
+    } catch (err: any) {
+      console.error("Failed to delete task:", err.response?.data || err.message);
+    }
+  };
+
+  const handleUpdate = (task: any) => {
+    setEditingTask(task);
     setShowAddForm(true);
   };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6 relative">
-      {/* Header & Add Task Button */}
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Tasks</h1>
         <div className="flex flex-col items-end">
@@ -83,7 +101,20 @@ export default function Dashboard() {
                 <h2 className="text-lg font-semibold">{task.title}</h2>
                 <p className="text-gray-400">{task.description}</p>
               </div>
-              <span className="text-sm capitalize">{task.status}</span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleUpdate(task)}
+                  className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded-md text-sm"
+                >
+                  Update
+                </button>
+                <button
+                  onClick={() => handleDelete(task._id)}
+                  className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded-md text-sm"
+                >
+                  Delete
+                </button>
+              </div>
             </li>
           ))}
         </ul>
@@ -95,8 +126,9 @@ export default function Dashboard() {
           <div className="relative w-full max-w-md">
             <TaskForm
               user={user}
+              task={editingTask}       // pass editing task to form
               onClose={() => setShowAddForm(false)}
-              onTaskAdded={fetchTasks} // refresh tasks after creation
+              onTaskAdded={fetchTasks} // refresh tasks after add/update
             />
           </div>
         </div>
