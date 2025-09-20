@@ -11,4 +11,5 @@ export interface Task {
   priority: "low" | "medium" | "high";
   dueDate?: string;
   createdBy: string;
+   subtasks: string[];
 }

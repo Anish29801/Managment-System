@@ -1,16 +1,7 @@
 "use client";
 
 import { TaskItem } from "./TaskItem";
-
-export interface Task {
-  _id: string;
-  title: string;
-  description?: string;
-  status: "pending" | "inprogress" | "completed";
-  priority: "low" | "medium" | "high";
-  dueDate?: string;
-  createdBy: string;
-}
+import { Task } from "../type";
 
 interface TaskListProps {
   tasks: Task[];
