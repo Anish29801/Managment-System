@@ -1,12 +1,14 @@
 import { Router, Request, Response } from "express";
 import { Task } from "../model/Task";
+import { authMiddleware } from "../middleware/taskAuth";
+
 
 const router = Router();
 
 // ✅ Create task (POST)
 router.post("/", async (req: Request, res: Response) => {
   try {
-    const { title, description, status, assignedTo, dueDate } = req.body;
+    const { title, description, status, assignedTo, dueDate,createdBy } = req.body;
 
     if (!title) {
       return res.status(400).json({ message: "Title is required" });
@@ -17,7 +19,8 @@ router.post("/", async (req: Request, res: Response) => {
       description,
       status: status || "pending",
       assignedTo,
-      dueDate
+      dueDate,
+      createdBy
     });
 
     const savedTask = await newTask.save();
@@ -29,16 +32,22 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 // ✅ Get all tasks
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
-    const tasks = await Task.find().populate("assignedTo", "name email");
+    const tasks = await Task.find().populate({
+      path: "assignedTo",
+      strictPopulate: false, // disables strict population for this query
+    }).populate({
+      path: "createdBy",
+      select: "name email"
+    });
+
     res.status(200).json(tasks);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to fetch tasks", error });
   }
 });
-
 // ✅ Get one task by ID
 router.get("/:id", async (req: Request, res: Response) => {
   try {

@@ -2,9 +2,23 @@ import { Router, Request, Response } from "express";
 import { User } from "../model/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { verifyToken } from "../middleware/auth"
+
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
+
+router.get("/me", verifyToken, async (req, res) => {
+  try {
+    const userId = req.userId; // set by verifyToken middleware
+    const user = await User.findById(userId).select("-password"); // exclude password
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json({ user: { id: user._id, name: user.name, email: user.email } });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 router.post("/signup", async (req: Request, res: Response) => {
   try {

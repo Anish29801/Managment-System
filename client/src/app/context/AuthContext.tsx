@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-interface User {
+export interface User {
+  id: string;
   name: string;
   email: string;
 }
@@ -18,7 +19,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  // Fetch user on mount
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
