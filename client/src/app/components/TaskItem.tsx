@@ -1,8 +1,10 @@
 "use client";
 
+import { Task } from "../type";
+
 interface TaskItemProps {
-  task: any;
-  onUpdate: (task: any) => void;
+  task: Task;
+  onUpdate: (task: Task) => void;
   onDelete: (id: string) => void;
 }
 
@@ -12,7 +14,9 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, onUpdate, onDelete }) 
       <div>
         <h2 className="text-lg font-semibold">{task.title}</h2>
         <p className="text-gray-400">{task.description}</p>
-        <span className="text-sm capitalize">{task.status}</span>
+        <p className="text-sm text-gray-500">
+          Priority: {task.priority} | Due: {task.dueDate || "N/A"}
+        </p>
       </div>
       <div className="flex gap-2">
         <button
