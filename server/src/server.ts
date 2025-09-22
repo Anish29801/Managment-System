@@ -12,7 +12,7 @@ const server = express();
 // Enable CORS before routes
 server.use(cors({
   origin: "http://localhost:3000",  // explicitly allow your frontend
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "PATCH","DELETE"],
   credentials: true
 }));
 
