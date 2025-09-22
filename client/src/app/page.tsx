@@ -7,6 +7,10 @@ import { useAuth } from "./context/AuthContext";
 import TaskForm from "./components/TaskForm";
 import { TaskSection } from "./components/TaskSection";
 import { Task, SubtaskDTO } from "./type";
+import {
+  DragDropContext,
+  DropResult
+} from "@hello-pangea/dnd";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -44,7 +48,7 @@ export default function Dashboard() {
     }
   }, [user]);
 
-  // Live search with debounce
+  // Live search
   useEffect(() => {
     const delay = setTimeout(() => {
       if (!searchQuery.trim()) {
@@ -94,6 +98,36 @@ export default function Dashboard() {
       fetchTasks();
     } catch (err: any) {
       console.error("Failed to delete task:", err.response?.data || err.message);
+    }
+  };
+
+  // Handle drag-and-drop
+  const handleDragEnd = async (result: DropResult) => {
+    if (!result.destination) return;
+
+    const { source, destination, draggableId } = result;
+
+    if (source.droppableId === destination.droppableId) return;
+
+    // Update backend status
+    const newStatus =
+      destination.droppableId === "pending"
+        ? "pending"
+        : destination.droppableId === "inprogress"
+        ? "inprogress"
+        : "completed";
+
+    try {
+      await axios.put(
+        `http://localhost:8000/tasks/${draggableId}`,
+        { status: newStatus },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      fetchTasks();
+    } catch (err: any) {
+      console.error("Failed to update task status:", err.response?.data || err.message);
     }
   };
 
@@ -150,26 +184,31 @@ export default function Dashboard() {
           Please Login
         </p>
       ) : (
-        <div className="flex flex-col md:flex-row gap-4">
-          <TaskSection
-            title="Pending"
-            tasks={pendingTasks}
-            onUpdate={handleUpdate}
-            onDelete={handleDelete}
-          />
-          <TaskSection
-            title="In Progress"
-            tasks={inProgressTasks}
-            onUpdate={handleUpdate}
-            onDelete={handleDelete}
-          />
-          <TaskSection
-            title="Completed"
-            tasks={completedTasks}
-            onUpdate={handleUpdate}
-            onDelete={handleDelete}
-          />
-        </div>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <div className="flex flex-col md:flex-row gap-4">
+            <TaskSection
+              droppableId="pending"
+              title="Pending"
+              tasks={pendingTasks}
+              onUpdate={handleUpdate}
+              onDelete={handleDelete}
+            />
+            <TaskSection
+              droppableId="inprogress"
+              title="In Progress"
+              tasks={inProgressTasks}
+              onUpdate={handleUpdate}
+              onDelete={handleDelete}
+            />
+            <TaskSection
+              droppableId="completed"
+              title="Completed"
+              tasks={completedTasks}
+              onUpdate={handleUpdate}
+              onDelete={handleDelete}
+            />
+          </div>
+        </DragDropContext>
       )}
 
       {/* Task Form Modal */}
