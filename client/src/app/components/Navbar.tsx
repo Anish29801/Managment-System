@@ -7,11 +7,6 @@ import { HiBars3, HiXMark } from "react-icons/hi2";
 import logo from "@public/logo.png";
 import { useAuth } from "../context/AuthContext";
 
-const navigation = [
-  { name: "Dashboard", href: "/" },
-  { name: "Charts", href: "/charts" }, // 📊 Added Charts route
-];
-
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
@@ -29,10 +24,17 @@ export default function Navbar() {
     "bg-purple-600",
   ];
 
-  // Pick a consistent color for each user (based on first letter)
   const color = user
     ? avatarColors[user.name.charCodeAt(0) % avatarColors.length]
     : "bg-gray-600";
+
+  // ✅ Only show Charts if logged in
+  const navigation = user
+    ? [
+        { name: "Dashboard", href: "/" },
+        { name: "Charts", href: "/charts" },
+      ]
+    : [{ name: "Dashboard", href: "/" }];
 
   return (
     <Disclosure as="nav" className="bg-gray-800/50 relative">
