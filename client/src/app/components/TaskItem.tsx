@@ -10,7 +10,7 @@ interface TaskItemProps {
 
 export const TaskItem: React.FC<TaskItemProps> = ({ task, onUpdate, onDelete }) => {
   return (
-    <li className="bg-gray-800 p-4 rounded-md flex justify-between items-center">
+    <li className="bg-[#101828] p-4 rounded-md flex justify-between items-center shadow-lg">
       <div>
         <h2 className="text-lg font-semibold">{task.title}</h2>
         <p className="text-gray-400">{task.description}</p>
