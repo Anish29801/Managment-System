@@ -9,7 +9,7 @@ import { TaskSection } from "./components/TaskSection";
 import { Task, SubtaskDTO } from "./type";
 import {
   DragDropContext,
-  DropResult
+  DropResult,
 } from "@hello-pangea/dnd";
 
 export default function Dashboard() {
@@ -48,7 +48,7 @@ export default function Dashboard() {
     }
   }, [user]);
 
-  // Live search
+  // Live search (kept same)
   useEffect(() => {
     const delay = setTimeout(() => {
       if (!searchQuery.trim()) {
@@ -101,15 +101,15 @@ export default function Dashboard() {
     }
   };
 
-  // Handle drag-and-drop
+  // ✅ Handle drag-and-drop
   const handleDragEnd = async (result: DropResult) => {
     if (!result.destination) return;
 
     const { source, destination, draggableId } = result;
 
+    // if same section, do nothing
     if (source.droppableId === destination.droppableId) return;
 
-    // Update backend status
     const newStatus =
       destination.droppableId === "pending"
         ? "pending"
@@ -125,7 +125,7 @@ export default function Dashboard() {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      fetchTasks();
+      fetchTasks(); // refresh tasks after update
     } catch (err: any) {
       console.error("Failed to update task status:", err.response?.data || err.message);
     }
