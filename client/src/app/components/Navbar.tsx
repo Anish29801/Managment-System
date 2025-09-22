@@ -37,7 +37,7 @@ export default function Navbar() {
     : [{ name: "Dashboard", href: "/" }];
 
   return (
-    <Disclosure as="nav" className="bg-gray-800/50 relative">
+    <Disclosure as="nav" className="bg-[#1e2939] relative shadow-lg">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -106,7 +106,7 @@ export default function Navbar() {
               </div>
 
               {/* Mobile menu button */}
-              <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
+              <div className="absolute inset-y-0 left-0 flex items-center sm:hidden shadow-lg">
                 <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-white/5 hover:text-white focus:outline-none">
                   <span className="sr-only">Open main menu</span>
                   {open ? (
