@@ -28,7 +28,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
   const [status, setStatus] = useState<"pending" | "inprogress" | "completed">(task?.status || "pending");
   const [priority, setPriority] = useState<"low" | "medium" | "high">(task?.priority || "medium");
   const [dueDate, setDueDate] = useState(task?.dueDate ? task.dueDate.split("T")[0] : "");
-  const [subTasks, setSubTasks] = useState(task?.subTasks?.join(";") || "");
+  const [subTasks, setSubTasks] = useState(task?.subtasks?.join(";") || "");
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -98,8 +98,8 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
           <p><strong>Status:</strong> {task.status}</p>
           <p><strong>Priority:</strong> {task.priority}</p>
           {task.dueDate && <p><strong>Due Date:</strong> {task.dueDate.split("T")[0]}</p>}
-          {task.subTasks && task.subTasks.length > 0 && (
-            <p><strong>Subtasks:</strong> {task.subTasks.join(", ")}</p>
+          {task.subtasks && task.subtasks.length > 0 && (
+            <p><strong>Subtasks:</strong> {task.subtasks.join(", ")}</p>
           )}
         </div>
       )}
