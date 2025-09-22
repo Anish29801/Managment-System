@@ -163,17 +163,6 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
           />
         </div>
 
-        <div>
-          <label className="text-gray-300">Sub Tasks (separate by ;)</label>
-          <textarea
-            value={subTasks}
-            onChange={(e) => setSubTasks(e.target.value)}
-            className="w-full mt-1 px-3 py-2 bg-gray-700 text-white rounded-md resize-y"
-            placeholder="Subtask1; Subtask2; Subtask3"
-            rows={4}
-          />
-        </div>
-
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <button
