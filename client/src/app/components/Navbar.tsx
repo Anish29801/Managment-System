@@ -7,7 +7,10 @@ import { HiBars3, HiXMark } from "react-icons/hi2";
 import logo from "@public/logo.png";
 import { useAuth } from "../context/AuthContext";
 
-const navigation = [{ name: "Dashboard", href: "/" }];
+const navigation = [
+  { name: "Dashboard", href: "/" },
+  { name: "Charts", href: "/charts" }, // 📊 Added Charts route
+];
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
