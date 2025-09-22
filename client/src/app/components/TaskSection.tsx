@@ -16,7 +16,6 @@ export const TaskSection: React.FC<TaskSectionProps> = ({
   title,
   tasks,
   onUpdate,
-  onDelete,
   droppableId,
 }) => {
   return (
@@ -49,7 +48,6 @@ export const TaskSection: React.FC<TaskSectionProps> = ({
                         <TaskItem
                           task={task}
                           onUpdate={onUpdate}
-                          onDelete={onDelete}
                         />
                       </div>
                     )}
