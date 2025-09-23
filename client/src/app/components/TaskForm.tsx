@@ -217,7 +217,6 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
 
         {/* Subtasks */}
         <div className="mt-4 p-3 bg-gray-700 rounded-md">
-          <label className="text-gray-300 font-semibold">Subtasks</label>
           {subtasks.map((st, i) => (
             <div key={i} className="flex items-center gap-2 mt-2">
               <input

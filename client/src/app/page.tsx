@@ -7,10 +7,7 @@ import { useAuth } from "./context/AuthContext";
 import TaskForm from "./components/TaskForm";
 import { TaskSection } from "./components/TaskSection";
 import { Task, SubtaskDTO } from "./type";
-import {
-  DragDropContext,
-  DropResult,
-} from "@hello-pangea/dnd";
+import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -21,7 +18,6 @@ export default function Dashboard() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch all tasks
   const fetchTasks = async () => {
     setLoading(true);
     try {
@@ -48,7 +44,6 @@ export default function Dashboard() {
     }
   }, [user]);
 
-  // Live search (kept same)
   useEffect(() => {
     const delay = setTimeout(() => {
       if (!searchQuery.trim()) {
@@ -58,12 +53,13 @@ export default function Dashboard() {
         setFilteredTasks(
           tasks.filter((t) => {
             const subtasksMatch = Array.isArray(t.subtasks)
-              ? t.subtasks.some((s) => {
-                  if (typeof s === "object" && s !== null && "title" in s) {
-                    return (s as SubtaskDTO).title.toLowerCase().includes(lowerQuery);
-                  }
-                  return false;
-                })
+              ? t.subtasks.some(
+                  (s) =>
+                    typeof s === "object" &&
+                    s !== null &&
+                    "title" in s &&
+                    (s as SubtaskDTO).title.toLowerCase().includes(lowerQuery)
+                )
               : false;
 
             return (
@@ -75,7 +71,6 @@ export default function Dashboard() {
         );
       }
     }, 300);
-
     return () => clearTimeout(delay);
   }, [searchQuery, tasks]);
 
@@ -101,13 +96,11 @@ export default function Dashboard() {
     }
   };
 
-  // ✅ Handle drag-and-drop
   const handleDragEnd = async (result: DropResult) => {
     if (!result.destination) return;
 
     const { source, destination, draggableId } = result;
 
-    // if same section, do nothing
     if (source.droppableId === destination.droppableId) return;
 
     const newStatus =
@@ -125,7 +118,7 @@ export default function Dashboard() {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      fetchTasks(); // refresh tasks after update
+      fetchTasks();
     } catch (err: any) {
       console.error("Failed to update task status:", err.response?.data || err.message);
     }
@@ -147,83 +140,91 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-        <h1 className="text-2xl font-bold">{greeting}</h1>
+    <div className="min-h-screen p-6 flex flex-col relative text-white
+                    bg-gradient-to-br from-gray-900 via-gray-800 to-black
+                    overflow-hidden">
+      {/* Shiny/glass overlay */}
+      <div className="absolute inset-0 bg-white/5 backdrop-blur-sm pointer-events-none z-0"></div>
 
-        <div className="flex items-center gap-4 w-full md:w-auto">
-          {/* Search Box */}
-          <div className="relative w-full md:w-64">
-            <input
-              type="text"
-              placeholder="Search tasks..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
+      {/* Main content */}
+      <div className="relative z-10 w-full">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+          <h1 className="text-2xl font-semibold">{greeting}</h1>
+
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            {/* Search Box */}
+            <div className="relative w-full md:w-64">
+              <input
+                type="text"
+                placeholder="Search tasks..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 rounded-md bg-gray-800/80 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
+            </div>
+
+            <button
+              onClick={handleAddClick}
+              disabled={!user}
+              className={`px-4 py-2 rounded-md ${
+                user ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-600 cursor-not-allowed"
+              }`}
+            >
+              Add Task
+            </button>
           </div>
-
-          <button
-            onClick={handleAddClick}
-            disabled={!user}
-            className={`px-4 py-2 rounded-md ${
-              user ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-600 cursor-not-allowed"
-            }`}
-          >
-            Add Task
-          </button>
         </div>
+
+        {loading ? (
+          <p className="text-center mt-10">Loading...</p>
+        ) : !user ? (
+          <p className="text-red-400 text-lg font-semibold text-center mt-10">
+            Please Login
+          </p>
+        ) : (
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <div className="flex flex-col md:flex-row gap-4">
+              <TaskSection
+                droppableId="pending"
+                title="Pending"
+                tasks={pendingTasks}
+                onUpdate={handleUpdate}
+                onDelete={handleDelete}
+              />
+              <TaskSection
+                droppableId="inprogress"
+                title="In Progress"
+                tasks={inProgressTasks}
+                onUpdate={handleUpdate}
+                onDelete={handleDelete}
+              />
+              <TaskSection
+                droppableId="completed"
+                title="Completed"
+                tasks={completedTasks}
+                onUpdate={handleUpdate}
+                onDelete={handleDelete}
+              />
+            </div>
+          </DragDropContext>
+        )}
+
+        {/* Task Form Modal */}
+        {showForm && user && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="relative w-full max-w-md">
+              <TaskForm
+                user={user}
+                task={editingTask}
+                onClose={() => setShowForm(false)}
+                onTaskAdded={fetchTasks}
+              />
+            </div>
+          </div>
+        )}
       </div>
-
-      {loading ? (
-        <p className="text-center mt-10">Loading...</p>
-      ) : !user ? (
-        <p className="text-red-400 text-lg font-semibold text-center mt-10">
-          Please Login
-        </p>
-      ) : (
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="flex flex-col md:flex-row gap-4">
-            <TaskSection
-              droppableId="pending"
-              title="Pending"
-              tasks={pendingTasks}
-              onUpdate={handleUpdate}
-              onDelete={handleDelete}
-            />
-            <TaskSection
-              droppableId="inprogress"
-              title="In Progress"
-              tasks={inProgressTasks}
-              onUpdate={handleUpdate}
-              onDelete={handleDelete}
-            />
-            <TaskSection
-              droppableId="completed"
-              title="Completed"
-              tasks={completedTasks}
-              onUpdate={handleUpdate}
-              onDelete={handleDelete}
-            />
-          </div>
-        </DragDropContext>
-      )}
-
-      {/* Task Form Modal */}
-      {showForm && user && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="relative w-full max-w-md">
-            <TaskForm
-              user={user}
-              task={editingTask}
-              onClose={() => setShowForm(false)}
-              onTaskAdded={fetchTasks}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

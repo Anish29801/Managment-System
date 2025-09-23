@@ -16,6 +16,7 @@ export const TaskSection: React.FC<TaskSectionProps> = ({
   title,
   tasks,
   onUpdate,
+  onDelete,
   droppableId,
 }) => {
   return (
@@ -38,17 +39,14 @@ export const TaskSection: React.FC<TaskSectionProps> = ({
                 <p className="text-gray-400">No tasks here.</p>
               ) : (
                 tasks.map((task, index) => (
-                  <Draggable key={task._id} draggableId={task._id} index={index}>
+                  <Draggable key={task._id!} draggableId={task._id!} index={index}>
                     {(provided) => (
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                       >
-                        <TaskItem
-                          task={task}
-                          onUpdate={onUpdate}
-                        />
+                        <TaskItem task={task} onUpdate={onUpdate} />
                       </div>
                     )}
                   </Draggable>
