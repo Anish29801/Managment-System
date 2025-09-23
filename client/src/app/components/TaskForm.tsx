@@ -29,7 +29,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
   const [status, setStatus] = useState<"pending" | "inprogress" | "completed">(task?.status || "pending");
   const [priority, setPriority] = useState<"low" | "medium" | "high">(task?.priority || "medium");
   const [dueDate, setDueDate] = useState(task?.dueDate ? task.dueDate.split("T")[0] : "");
-  const [subTasks, setSubTasks] = useState(task?.subTasks?.join(";") || "");
+  const [subTasks, setSubTasks] = useState(task?.subtasks?.join(";") || "");
   const [error, setError] = useState<string | null>(null);
 
   const [details, setDetails] = useState({

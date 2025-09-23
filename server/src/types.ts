@@ -17,24 +17,26 @@ export interface ISearchIndex extends Document {
   createdAt: Date;
 }
 
+// ✅ Fix: remove optional `_id` (Document already ensures _id exists)
 export interface ISubtask extends Document {
-  taskId: Types.ObjectId;
+  _id: Types.ObjectId; 
   title: string;
-  status: "pending" | "inprogress" | "completed";
-  createdAt: Date;
-  updatedAt: Date;
+  status: "pending" | "completed";
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface ITask extends Document {
+  _id: Types.ObjectId;
   title: string;
   description?: string;
   status: "pending" | "inprogress" | "completed";
-  priority: "low" | "medium" | "high";
+  priority?: "low" | "medium" | "high";
   dueDate?: Date;
   createdBy: Types.ObjectId;
-  subtasks: Types.ObjectId[];
-  createdAt: Date;
-  updatedAt: Date;
+  subtasks: Types.DocumentArray<ISubtask>;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface IUser extends Document {
