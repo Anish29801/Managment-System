@@ -14,7 +14,7 @@ interface TaskFormProps {
 }
 
 const subtaskSchema = z.object({
-  title: z.string().min(1, "Subtask title is required"),
+  title: z.string().min(1, "*"),
   status: z.enum(["pending", "completed"]).default("pending"),
 });
 
@@ -128,29 +128,6 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
       </button>
 
       <h2 className="text-xl font-bold mb-4 text-white">{task ? "Update Task" : "Add Task"}</h2>
-
-      {/* Show existing details as labels on top (read-only) */}
-      {task && (
-        <div className="mb-4 p-3 bg-gray-700 rounded-md text-sm text-gray-300 space-y-1">
-          <p><strong>Current Title:</strong> {task.title}</p>
-          <p><strong>Description:</strong> {task.description || "—"}</p>
-          <p><strong>Status:</strong> {task.status}</p>
-          <p><strong>Priority:</strong> {task.priority}</p>
-          <p><strong>Due Date:</strong> {task.dueDate?.split("T")[0] || "—"}</p>
-          {task.subtasks && task.subtasks.length > 0 && (
-            <div>
-              <strong>Subtasks:</strong>
-              <ul className="list-disc list-inside">
-                {task.subtasks.map((st, i) => (
-                  <li key={i}>
-                    {st.title} ({st.status})
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
 
       <form className="space-y-3" onSubmit={!task ? handleAdd : undefined}>
         {/* Title */}
