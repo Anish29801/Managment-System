@@ -8,7 +8,7 @@ const router = Router();
 // ✅ Create task (POST)
 router.post("/", async (req: Request, res: Response) => {
   try {
-    const { title, description, status, assignedTo, dueDate,createdBy } = req.body;
+    const { title, description, status, assignedTo, dueDate,createdBy,subtasks } = req.body;
 
     if (!title) {
       return res.status(400).json({ message: "Title is required" });
@@ -20,7 +20,8 @@ router.post("/", async (req: Request, res: Response) => {
       status: status || "pending",
       assignedTo,
       dueDate,
-      createdBy
+      createdBy,
+      subtasks: subtasks || []
     });
 
     const savedTask = await newTask.save();

@@ -1,5 +1,13 @@
 import { Schema, model } from "mongoose";
-import { ITask } from "../types";
+import { ITask, ISubtask } from "../types";
+
+const subtaskSchema = new Schema<ISubtask>(
+  {
+    title: { type: String, required: true },
+    status: { type: String, enum: ["pending", "completed"], default: "pending" }
+  },
+  { timestamps: true }
+);
 
 const taskSchema = new Schema<ITask>(
   {
@@ -10,10 +18,16 @@ const taskSchema = new Schema<ITask>(
       enum: ["pending", "inprogress", "completed"],
       default: "pending"
     },
-    priority: { type: String, enum: ["low", "medium", "high"], default: "medium" },
+    priority: {
+      type: String,
+      enum: ["low", "medium", "high"],
+      default: "medium"
+    },
     dueDate: { type: Date },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    subtasks: [{ type: Schema.Types.ObjectId, ref: "Subtask" }]
+
+    // ✅ Embedded Subtasks instead of separate collection
+    subtasks: [subtaskSchema]
   },
   { timestamps: true }
 );
