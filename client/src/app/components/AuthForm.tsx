@@ -76,10 +76,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black px-4">
       <div className="w-full max-w-md bg-gray-800/90 backdrop-blur-md p-8 rounded-2xl shadow-lg border border-gray-700">
         {/* Hydration-safe heading */}
-        <h2 className="text-3xl font-semibold mb-6 text-center text-white capitalize">
+        <h2 className="text-3xl sm:text-4xl font-semibold mb-8 text-center text-white tracking-wide drop-shadow-md">
           {type === "signup" ? "Sign Up" : "Login"}
         </h2>
-
         <form onSubmit={handleSubmit} className="space-y-5">
           {type === "signup" && (
             <div>
