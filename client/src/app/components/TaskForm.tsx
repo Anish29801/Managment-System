@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { z, ZodError } from "zod";
 import { User } from "../context/AuthContext";
@@ -23,15 +23,15 @@ const taskSchema = z.object({
 });
 
 export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded }) => {
+  // ---- State ----
   const [title, setTitle] = useState(task?.title || "");
   const [description, setDescription] = useState(task?.description || "");
   const [status, setStatus] = useState<"pending" | "inprogress" | "completed">(task?.status || "pending");
   const [priority, setPriority] = useState<"low" | "medium" | "high">(task?.priority || "medium");
   const [dueDate, setDueDate] = useState(task?.dueDate ? task.dueDate.split("T")[0] : "");
-  const [subTasks, setSubTasks] = useState(task?.subtasks?.join(";") || "");
+  const [subTasks, setSubTasks] = useState(task?.subTasks?.join(";") || "");
   const [error, setError] = useState<string | null>(null);
 
-  // This state reflects the details live
   const [details, setDetails] = useState({
     title,
     description,
@@ -41,22 +41,20 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
     subTasks: subTasks.split(";").filter(Boolean),
   });
 
-  // Debounce helper
+  // ---- Debounce helper ----
   const debounce = (fn: Function, delay = 500) => {
     let timer: NodeJS.Timeout;
-    return (...args: any) => {
+    return (...args: any[]) => {
       clearTimeout(timer);
       timer = setTimeout(() => fn(...args), delay);
     };
   };
 
+  // ---- Auto-update for edit mode ----
   const autoUpdate = async () => {
-    if (!task) return;
+    if (!task?._id) return;
 
-    const subTasksArray = subTasks
-      .split(";")
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
+    const subTasksArray = subTasks.split(";").map((s) => s.trim()).filter(Boolean);
 
     try {
       taskSchema.parse({ title, description, status, priority, dueDate, subTasks: subTasksArray });
@@ -67,16 +65,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
 
-      // Update the live details
-      setDetails({
-        title,
-        description,
-        status,
-        priority,
-        dueDate,
-        subTasks: subTasksArray,
-      });
-
+      setDetails({ title, description, status, priority, dueDate, subTasks: subTasksArray });
       onTaskAdded();
     } catch (err: any) {
       if (err instanceof ZodError) setError(err.issues[0].message);
@@ -85,22 +74,47 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
     }
   };
 
-  const debouncedAutoUpdate = debounce(autoUpdate, 500);
+  const debouncedAutoUpdate = useMemo(() => debounce(autoUpdate, 500), [title, description, status, priority, dueDate, subTasks]);
 
-  // Trigger auto-update and live details whenever a field changes
   useEffect(() => {
-    if (task?._id) {
-      debouncedAutoUpdate();
-    }
+    if (task?._id) debouncedAutoUpdate();
   }, [title, description, status, priority, dueDate, subTasks]);
 
-  const handleDelete = async () => {
-    if (!task) return;
+  // ---- Add Task ----
+  const handleAdd = async (e: React.FormEvent) => {
+    e.preventDefault();
     setError(null);
+
+    const subTasksArray = subTasks.split(";").map((s) => s.trim()).filter(Boolean);
+
+    try {
+      taskSchema.parse({ title, description, status, priority, dueDate, subTasks: subTasksArray });
+
+      await axios.post(
+        "http://localhost:8000/tasks",
+        { title, description, status, priority, dueDate, subTasks: subTasksArray, createdBy: user.id },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
+
+      onTaskAdded();
+      onClose();
+    } catch (err: any) {
+      if (err instanceof ZodError) setError(err.issues[0].message);
+      else if (err.response?.data?.error) setError(err.response.data.error);
+      else setError("Failed to add task");
+    }
+  };
+
+  // ---- Delete Task ----
+  const handleDelete = async () => {
+    if (!task?._id) return;
+    setError(null);
+
     try {
       await axios.delete(`http://localhost:8000/tasks/${task._id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+
       onTaskAdded();
       onClose();
     } catch (err: any) {
@@ -110,11 +124,9 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
 
   return (
     <div className="bg-gray-800 p-6 rounded-md relative w-full max-w-md mx-auto">
-      <button onClick={onClose} className="absolute top-2 right-2 text-white font-bold text-lg">
-        X
-      </button>
+      <button onClick={onClose} className="absolute top-2 right-2 text-white font-bold text-lg">X</button>
 
-      {/* Show task details live */}
+      {/* Live details when editing */}
       {task && (
         <div className="mb-4 p-4 bg-gray-700 rounded-md text-white">
           <h3 className="text-lg font-semibold mb-2">Task Details</h3>
@@ -123,15 +135,13 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
           <p><strong>Status:</strong> {details.status}</p>
           <p><strong>Priority:</strong> {details.priority}</p>
           {details.dueDate && <p><strong>Due Date:</strong> {details.dueDate}</p>}
-          {details.subTasks && details.subTasks.length > 0 && (
-            <p><strong>Subtasks:</strong> {details.subTasks.join(", ")}</p>
-          )}
+          {details.subTasks.length > 0 && <p><strong>Subtasks:</strong> {details.subTasks.join(", ")}</p>}
         </div>
       )}
 
       <h2 className="text-xl font-bold mb-4 text-white">{task ? "Update Task" : "Add Task"}</h2>
 
-      <form className="space-y-3">
+      <form className="space-y-3" onSubmit={!task ? handleAdd : undefined}>
         <div>
           <label className="text-gray-300">Title</label>
           <input
@@ -200,6 +210,12 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
         </div>
 
         {error && <p className="text-red-500 text-sm">{error}</p>}
+
+        {!task && (
+          <button type="submit" className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md">
+            Add Task
+          </button>
+        )}
 
         {task?._id && (
           <button
