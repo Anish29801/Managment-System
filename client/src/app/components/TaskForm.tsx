@@ -27,6 +27,15 @@ const taskSchema = z.object({
   subtasks: z.array(subtaskSchema).optional(),
 });
 
+// ---- Debounce helper ----
+const debounce = (fn: Function, delay = 800) => {
+  let timer: NodeJS.Timeout;
+  return (...args: any[]) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+};
+
 export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded }) => {
   const [title, setTitle] = useState(task?.title || "");
   const [description, setDescription] = useState(task?.description || "");
@@ -36,36 +45,34 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
   const [subtasks, setSubtasks] = useState<{ title: string; status: "pending" | "completed" }[]>(task?.subtasks || []);
   const [error, setError] = useState<string | null>(null);
 
-  const debounce = (fn: Function, delay = 500) => {
-    let timer: NodeJS.Timeout;
-    return (...args: any[]) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => fn(...args), delay);
-    };
-  };
-
-  const autoUpdate = async () => {
+  // ---- Auto Update ----
+  const autoUpdate = async (updatedTask: any) => {
     if (!task?._id) return;
     try {
-      taskSchema.parse({ title, description, status, priority, dueDate, subtasks });
+      taskSchema.parse(updatedTask);
       await axios.patch(
         `http://localhost:8000/tasks/${task._id}`,
-        { title, description, status, priority, dueDate, subtasks },
+        updatedTask,
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
-      onTaskAdded();
+      // ❌ do not call onTaskAdded here → prevents dashboard flicker
     } catch (err: any) {
       if (err instanceof ZodError) setError(err.issues[0].message);
       else setError(err.response?.data?.error || "Unexpected error occurred");
     }
   };
 
-  const debouncedAutoUpdate = useMemo(() => debounce(autoUpdate, 500), [title, description, status, priority, dueDate, subtasks]);
+  // Stable debounce
+  const debouncedAutoUpdate = useMemo(() => debounce(autoUpdate, 800), []);
 
+  // Auto update when editing existing task
   useEffect(() => {
-    if (task?._id) debouncedAutoUpdate();
+    if (task?._id) {
+      debouncedAutoUpdate({ title, description, status, priority, dueDate, subtasks });
+    }
   }, [title, description, status, priority, dueDate, subtasks]);
 
+  // ---- Handlers ----
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -109,26 +116,37 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
 
   return (
     <div className="bg-gray-800 p-6 rounded-md relative w-full max-w-md mx-auto">
-      <button onClick={onClose} className="absolute top-2 right-2 text-white font-bold text-lg">X</button>
+      {/* Close Button */}
+      <button
+        onClick={() => {
+          onTaskAdded(); // refresh dashboard only once when form closes
+          onClose();
+        }}
+        className="absolute top-2 right-2 text-white font-bold text-lg"
+      >
+        X
+      </button>
 
       <h2 className="text-xl font-bold mb-4 text-white">{task ? "Update Task" : "Add Task"}</h2>
 
-      {/* --- OLD TASK DETAILS AS LABELS --- */}
+      {/* Show existing details as labels on top (read-only) */}
       {task && (
-        <div className="mb-4 p-3 bg-gray-700 rounded-md text-gray-200 space-y-2">
-          <div><strong>Old Title:</strong> {task.title}</div>
-          {task.description && <div><strong>Old Description:</strong> {task.description}</div>}
-          <div><strong>Old Status:</strong> {task.status}</div>
-          <div><strong>Old Priority:</strong> {task.priority}</div>
-          {task.dueDate && <div><strong>Old Due Date:</strong> {task.dueDate.split("T")[0]}</div>}
+        <div className="mb-4 p-3 bg-gray-700 rounded-md text-sm text-gray-300 space-y-1">
+          <p><strong>Current Title:</strong> {task.title}</p>
+          <p><strong>Description:</strong> {task.description || "—"}</p>
+          <p><strong>Status:</strong> {task.status}</p>
+          <p><strong>Priority:</strong> {task.priority}</p>
+          <p><strong>Due Date:</strong> {task.dueDate?.split("T")[0] || "—"}</p>
           {task.subtasks && task.subtasks.length > 0 && (
             <div>
-              <strong>Old Subtasks:</strong>{" "}
-              {task.subtasks.map((s, i) => (
-                <span key={i} className="bg-gray-600 text-white px-2 py-1 rounded-full text-xs mr-1">
-                  {s.title}
-                </span>
-              ))}
+              <strong>Subtasks:</strong>
+              <ul className="list-disc list-inside">
+                {task.subtasks.map((st, i) => (
+                  <li key={i}>
+                    {st.title} ({st.status})
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
