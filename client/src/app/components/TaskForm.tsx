@@ -13,13 +13,18 @@ interface TaskFormProps {
   task?: Task | null;
 }
 
+const subtaskSchema = z.object({
+  title: z.string().min(1, "Subtask title is required"),
+  status: z.enum(["pending", "completed"]).default("pending"),
+});
+
 const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   status: z.enum(["pending", "inprogress", "completed"]),
   priority: z.enum(["low", "medium", "high"]),
   dueDate: z.string().optional(),
-  subTasks: z.array(z.string()).optional(),
+  subtasks: z.array(subtaskSchema).optional(),
 });
 
 export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded }) => {
@@ -29,17 +34,10 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
   const [status, setStatus] = useState<"pending" | "inprogress" | "completed">(task?.status || "pending");
   const [priority, setPriority] = useState<"low" | "medium" | "high">(task?.priority || "medium");
   const [dueDate, setDueDate] = useState(task?.dueDate ? task.dueDate.split("T")[0] : "");
-  const [subTasks, setSubTasks] = useState(task?.subtasks?.join(";") || "");
+  const [subtasks, setSubtasks] = useState<{ title: string; status: "pending" | "completed" }[]>(
+    task?.subtasks || []
+  );
   const [error, setError] = useState<string | null>(null);
-
-  const [details, setDetails] = useState({
-    title,
-    description,
-    status,
-    priority,
-    dueDate,
-    subTasks: subTasks.split(";").filter(Boolean),
-  });
 
   // ---- Debounce helper ----
   const debounce = (fn: Function, delay = 500) => {
@@ -54,45 +52,42 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
   const autoUpdate = async () => {
     if (!task?._id) return;
 
-    const subTasksArray = subTasks.split(";").map((s) => s.trim()).filter(Boolean);
-
     try {
-      taskSchema.parse({ title, description, status, priority, dueDate, subTasks: subTasksArray });
+      taskSchema.parse({ title, description, status, priority, dueDate, subtasks });
 
       await axios.patch(
         `http://localhost:8000/tasks/${task._id}`,
-        { title, description, status, priority, dueDate, subTasks: subTasksArray },
+        { title, description, status, priority, dueDate, subtasks },
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
 
-      setDetails({ title, description, status, priority, dueDate, subTasks: subTasksArray });
       onTaskAdded();
     } catch (err: any) {
       if (err instanceof ZodError) setError(err.issues[0].message);
-      else if (err.response?.data?.error) setError(err.response.data.error);
-      else setError("Unexpected error occurred");
+      else setError(err.response?.data?.error || "Unexpected error occurred");
     }
   };
 
-  const debouncedAutoUpdate = useMemo(() => debounce(autoUpdate, 500), [title, description, status, priority, dueDate, subTasks]);
+  const debouncedAutoUpdate = useMemo(
+    () => debounce(autoUpdate, 500),
+    [title, description, status, priority, dueDate, subtasks]
+  );
 
   useEffect(() => {
     if (task?._id) debouncedAutoUpdate();
-  }, [title, description, status, priority, dueDate, subTasks]);
+  }, [title, description, status, priority, dueDate, subtasks]);
 
   // ---- Add Task ----
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    const subTasksArray = subTasks.split(";").map((s) => s.trim()).filter(Boolean);
-
     try {
-      taskSchema.parse({ title, description, status, priority, dueDate, subTasks: subTasksArray });
+      taskSchema.parse({ title, description, status, priority, dueDate, subtasks });
 
       await axios.post(
         "http://localhost:8000/tasks",
-        { title, description, status, priority, dueDate, subTasks: subTasksArray, createdBy: user.id },
+        { title, description, status, priority, dueDate, subtasks, createdBy: user.id },
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
 
@@ -100,8 +95,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
       onClose();
     } catch (err: any) {
       if (err instanceof ZodError) setError(err.issues[0].message);
-      else if (err.response?.data?.error) setError(err.response.data.error);
-      else setError("Failed to add task");
+      else setError(err.response?.data?.error || "Failed to add task");
     }
   };
 
@@ -122,22 +116,24 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
     }
   };
 
+  // ---- Subtask Handlers ----
+  const addSubtask = () => {
+    setSubtasks([...subtasks, { title: "", status: "pending" }]);
+  };
+
+  const updateSubtask = (index: number, field: "title" | "status", value: string) => {
+    const updated = [...subtasks];
+    (updated[index] as any)[field] = value;
+    setSubtasks(updated);
+  };
+
+  const deleteSubtask = (index: number) => {
+    setSubtasks(subtasks.filter((_, i) => i !== index));
+  };
+
   return (
     <div className="bg-gray-800 p-6 rounded-md relative w-full max-w-md mx-auto">
       <button onClick={onClose} className="absolute top-2 right-2 text-white font-bold text-lg">X</button>
-
-      {/* Live details when editing */}
-      {task && (
-        <div className="mb-4 p-4 bg-gray-700 rounded-md text-white">
-          <h3 className="text-lg font-semibold mb-2">Task Details</h3>
-          <p><strong>Title:</strong> {details.title}</p>
-          {details.description && <p><strong>Description:</strong> {details.description}</p>}
-          <p><strong>Status:</strong> {details.status}</p>
-          <p><strong>Priority:</strong> {details.priority}</p>
-          {details.dueDate && <p><strong>Due Date:</strong> {details.dueDate}</p>}
-          {details.subTasks.length > 0 && <p><strong>Subtasks:</strong> {details.subTasks.join(", ")}</p>}
-        </div>
-      )}
 
       <h2 className="text-xl font-bold mb-4 text-white">{task ? "Update Task" : "Add Task"}</h2>
 
@@ -198,15 +194,42 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
           />
         </div>
 
+        {/* Subtasks UI */}
         <div>
-          <label className="text-gray-300">Sub Tasks (separate by ;)</label>
-          <textarea
-            value={subTasks}
-            onChange={(e) => setSubTasks(e.target.value)}
-            className="w-full mt-1 px-3 py-2 bg-gray-700 text-white rounded-md resize-y"
-            placeholder="Subtask1; Subtask2; Subtask3"
-            rows={4}
-          />
+          <label className="text-gray-300">Subtasks</label>
+          {subtasks.map((st, i) => (
+            <div key={i} className="flex items-center space-x-2 mt-2">
+              <input
+                type="text"
+                value={st.title}
+                onChange={(e) => updateSubtask(i, "title", e.target.value)}
+                className="flex-1 px-3 py-2 bg-gray-700 text-white rounded-md"
+                placeholder="Subtask title"
+              />
+              <select
+                value={st.status}
+                onChange={(e) => updateSubtask(i, "status", e.target.value)}
+                className="px-2 py-2 bg-gray-700 text-white rounded-md"
+              >
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+              </select>
+              <button
+                type="button"
+                onClick={() => deleteSubtask(i)}
+                className="px-2 py-2 bg-red-600 text-white rounded-md"
+              >
+                X
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addSubtask}
+            className="mt-2 px-3 py-2 bg-blue-600 text-white rounded-md"
+          >
+            + Add Subtask
+          </button>
         </div>
 
         {error && <p className="text-red-500 text-sm">{error}</p>}

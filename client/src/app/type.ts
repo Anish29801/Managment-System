@@ -5,16 +5,27 @@ export interface User {
   name: string;
   email: string;
 }
+export interface Subtask {
+  _id?: string;
+  title: string;
+  status: "pending" | "completed";
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface Task {
-  _id: string;
+  _id?: string;
   title: string;
   description?: string;
   status: "pending" | "inprogress" | "completed";
   priority: "low" | "medium" | "high";
   dueDate?: string;
+  subtasks: Subtask[];   // 👈 change from string[] to Subtask[]
   createdBy: string;
-   subtasks: string[];
+  createdAt?: string;
+  updatedAt?: string;
 }
+
 export interface SubtaskDTO {
   _id?: Types.ObjectId | string; // Optional, because new subtasks may not have an ID yet
   title: string;
