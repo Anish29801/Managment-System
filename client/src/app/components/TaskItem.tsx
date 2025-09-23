@@ -15,18 +15,30 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, onUpdate }) => {
     >
       <h2 className="text-lg font-semibold text-white">{task.title}</h2>
 
-      {task.description ? (
+      {task.description && (
         <p className="text-gray-400">{task.description}</p>
-      ) : null}
+      )}
 
       <div className="text-sm text-gray-500 flex flex-wrap gap-2">
         <span><strong>Status:</strong> {task.status}</span>
         <span><strong>Priority:</strong> {task.priority}</span>
-        {task.dueDate ? <span><strong>Due:</strong> {task.dueDate.split("T")[0]}</span> : null}
-        {task.subtasks && task.subtasks.length > 0 ? (
-          <span><strong>Subtasks:</strong> {task.subtasks.join(", ")}</span>
-        ) : null}
+        {task.dueDate && <span><strong>Due:</strong> {task.dueDate.split("T")[0]}</span>}
+        {task.subtasks && task.subtasks.length > 0 && (
+          <span className="flex flex-wrap gap-1">
+            <strong>Subtasks:</strong>{" "}
+            {task.subtasks.map((s) => (
+              <span
+                key={s.title}
+                className="bg-gray-600 text-white px-2 py-1 rounded-full text-xs"
+              >
+                {s.title}
+              </span>
+            ))}
+          </span>
+        )}
       </div>
     </li>
   );
 };
+
+export default TaskItem;
