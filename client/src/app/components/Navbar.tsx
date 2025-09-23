@@ -44,7 +44,14 @@ export default function Navbar() {
             <div className="relative flex h-16 items-center justify-between">
               {/* Left side */}
               <div className="flex items-center space-x-6">
-                <Image src={logo} alt="Logo" className="h-8 w-auto" />
+                <Image
+                  src={logo}
+                  alt="Logo"
+                  width={32}
+                  height={32}
+                  className="h-8 w-auto"
+                  priority
+                />
 
                 <div className="hidden sm:flex sm:space-x-4">
                   {navigation.map((item) => {
@@ -58,7 +65,7 @@ export default function Navbar() {
                           isActive
                             ? "bg-gray-950/50 text-white"
                             : "text-gray-300 hover:bg-white/5 hover:text-white",
-                          "rounded-md px-3 py-2 text-sm font-medium"
+                          "rounded-md px-3 py-2 text-sm font-medium transition"
                         )}
                       >
                         {item.name}
@@ -82,7 +89,7 @@ export default function Navbar() {
                     {/* Logout */}
                     <button
                       onClick={logout}
-                      className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white"
+                      className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white transition"
                     >
                       Logout
                     </button>
@@ -91,13 +98,13 @@ export default function Navbar() {
                   <>
                     <a
                       href="/login"
-                      className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white"
+                      className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white transition"
                     >
                       Login
                     </a>
                     <a
                       href="/signup"
-                      className="px-3 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700"
+                      className="px-3 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
                     >
                       Sign Up
                     </a>
@@ -118,6 +125,55 @@ export default function Navbar() {
               </div>
             </div>
           </div>
+
+          {/* Mobile Nav Panel */}
+          <Disclosure.Panel className="sm:hidden">
+            <div className="space-y-1 px-2 pb-3 pt-2">
+              {navigation.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    aria-current={isActive ? "page" : undefined}
+                    className={classNames(
+                      isActive
+                        ? "bg-gray-950/50 text-white"
+                        : "text-gray-300 hover:bg-white/5 hover:text-white",
+                      "block rounded-md px-3 py-2 text-base font-medium transition"
+                    )}
+                  >
+                    {item.name}
+                  </a>
+                );
+              })}
+
+              {/* Auth buttons on mobile */}
+              {user ? (
+                <button
+                  onClick={logout}
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white transition"
+                >
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <a
+                    href="/login"
+                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white transition"
+                  >
+                    Login
+                  </a>
+                  <a
+                    href="/signup"
+                    className="block rounded-md px-3 py-2 text-base font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
+                  >
+                    Sign Up
+                  </a>
+                </>
+              )}
+            </div>
+          </Disclosure.Panel>
         </>
       )}
     </Disclosure>
