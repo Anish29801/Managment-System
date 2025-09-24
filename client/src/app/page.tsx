@@ -1,79 +1,44 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { FaSearch } from "react-icons/fa";
 import { useAuth } from "./context/AuthContext";
 import TaskForm from "./components/TaskForm";
+import { Task } from "./type";
 import { TaskSection } from "./components/TaskSection";
-import { Task, SubtaskDTO } from "./type";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 
 export default function Dashboard() {
   const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
+  /* ---------------- Fetch Tasks from server ---------------- */
   const fetchTasks = async () => {
+    if (!user) return;
     setLoading(true);
     try {
       const res = await axios.get<Task[]>("http://localhost:8000/tasks", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      const data = Array.isArray(res.data) ? res.data : [];
-      setTasks(data);
-      setFilteredTasks(data);
+      setTasks(Array.isArray(res.data) ? res.data : []);
     } catch (err: any) {
       console.error("Failed to fetch tasks:", err.response?.data || err.message);
       setTasks([]);
-      setFilteredTasks([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (user) fetchTasks();
-    else {
-      setTasks([]);
-      setFilteredTasks([]);
-    }
+    fetchTasks();
   }, [user]);
 
-  useEffect(() => {
-    const delay = setTimeout(() => {
-      if (!searchQuery.trim()) {
-        setFilteredTasks(tasks);
-      } else {
-        const lowerQuery = searchQuery.toLowerCase();
-        setFilteredTasks(
-          tasks.filter((t) => {
-            const subtasksMatch = Array.isArray(t.subtasks)
-              ? t.subtasks.some(
-                  (s) =>
-                    typeof s === "object" &&
-                    s !== null &&
-                    "title" in s &&
-                    (s as SubtaskDTO).title.toLowerCase().includes(lowerQuery)
-                )
-              : false;
-
-            return (
-              t.title.toLowerCase().includes(lowerQuery) ||
-              t.description?.toLowerCase().includes(lowerQuery) ||
-              subtasksMatch
-            );
-          })
-        );
-      }
-    }, 300);
-    return () => clearTimeout(delay);
-  }, [searchQuery, tasks]);
-
+  /* ---------------- Handlers ---------------- */
   const handleAddClick = () => {
     setEditingTask(null);
     setShowForm(true);
@@ -100,7 +65,6 @@ export default function Dashboard() {
     if (!result.destination) return;
 
     const { source, destination, draggableId } = result;
-
     if (source.droppableId === destination.droppableId) return;
 
     const newStatus =
@@ -124,10 +88,18 @@ export default function Dashboard() {
     }
   };
 
+  /* ---------------- Search Filtering ---------------- */
+  const filteredTasks = useMemo(() => {
+    if (!searchQuery.trim()) return tasks;
+    const query = searchQuery.toLowerCase();
+    return tasks.filter((t) => t.title.toLowerCase().includes(query));
+  }, [tasks, searchQuery]);
+
   const pendingTasks = filteredTasks.filter((t) => t.status === "pending");
   const inProgressTasks = filteredTasks.filter((t) => t.status === "inprogress");
   const completedTasks = filteredTasks.filter((t) => t.status === "completed");
 
+  /* ---------------- Greeting ---------------- */
   const greeting = user
     ? `Hi, ${user.name} Good ${getTimeOfDay()}`
     : "Hi, Guest";
@@ -139,16 +111,14 @@ export default function Dashboard() {
     return "Evening";
   }
 
+  /* ---------------- Render ---------------- */
   return (
     <div className="min-h-screen p-6 flex flex-col relative text-white
                     bg-gradient-to-br from-gray-900 via-gray-800 to-black
                     overflow-hidden">
-      {/* Shiny/glass overlay */}
       <div className="absolute inset-0 bg-white/5 backdrop-blur-sm pointer-events-none z-0"></div>
 
-      {/* Main content */}
       <div className="relative z-10 w-full">
-        {/* Header & Branding */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-2 gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
@@ -181,9 +151,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Subheading */}
         <p className="text-gray-300 text-sm mb-6">
-          Organize your day. Stay productive. Manage tasks effortlessly with <span className="text-blue-400 font-semibold">TaskMaster</span>.
+          Organize your day. Stay productive. Manage tasks effortlessly with{" "}
+          <span className="text-blue-400 font-semibold">TaskMaster</span>.
         </p>
 
         {loading ? (
@@ -223,10 +193,15 @@ export default function Dashboard() {
           </DragDropContext>
         )}
 
-        {/* Task Form Modal */}
         {showForm && user && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="relative w-full max-w-md">
+          <div
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            onClick={() => setShowForm(false)}
+          >
+            <div
+              className="relative w-full max-w-md"
+              onClick={(e) => e.stopPropagation()}
+            >
               <TaskForm
                 user={user}
                 task={editingTask}

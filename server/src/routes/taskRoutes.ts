@@ -29,9 +29,26 @@ router.post("/", authMiddleware, async (req: Request, res: Response) => {
 });
 
 /* ------------------- Get All Tasks ------------------- */
+/* ------------------- Get All Tasks with Search ------------------- */
 router.get("/", authMiddleware, async (req, res) => {
   try {
-    const tasks = await Task.find({ createdBy: (req as any).userId }).populate({
+    const { search } = req.query;
+    const userId = (req as any).userId;
+
+    // Base query (only tasks by logged-in user)
+    let query: any = { createdBy: userId };
+
+    if (search && typeof search === "string") {
+      const regex = new RegExp(search, "i"); // case-insensitive regex
+
+      query.$or = [
+        { title: regex },
+        { description: regex },
+        { "subtasks.title": regex }, // also search in subtask titles
+      ];
+    }
+
+    const tasks = await Task.find(query).populate({
       path: "createdBy",
       select: "name email",
     });
