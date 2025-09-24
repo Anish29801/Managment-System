@@ -1,20 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  color?: string;
-}
-
-interface AuthContextType {
-  user: User | null;
-  color: string;
-  setUser: (user: User | null) => void;
-  logout: () => void;
-}
+import {User, AuthContextType} from "../type"
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

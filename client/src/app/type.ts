@@ -4,7 +4,16 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  color?: string;
 }
+
+export interface AuthContextType {
+  user: User | null;
+  color: string;
+  setUser: (user: User | null) => void;
+  logout: () => void;
+}
+
 export interface Subtask {
   _id?: string;
   title: string;
