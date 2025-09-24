@@ -17,7 +17,13 @@ const taskSchema = z.object({
   description: z.string().optional(),
   status: z.enum(["pending", "inprogress", "completed"]),
   priority: z.enum(["low", "medium", "high"]),
-  dueDate: z.string().optional(),
+  dueDate: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || new Date(val) >= new Date(new Date().toDateString()),
+      { message: "Due date must be today or in the future" }
+    ),
   subtasks: z.array(subtaskSchema).optional(),
 });
 
@@ -142,6 +148,8 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
   }, []);
 
   /* ------------------------------- Render -------------------------------- */
+  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD for min attribute
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="dialog" aria-modal="true">
       <div ref={modalRef} className="w-full max-w-4xl bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl overflow-hidden">
@@ -212,6 +220,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
                   className="w-full px-3 py-2 rounded bg-gray-700 text-white"
+                  min={today} // prevent past dates
                 />
               </div>
 
