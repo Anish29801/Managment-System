@@ -15,19 +15,6 @@ export default function Navbar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
 
-  // 🎨 Define avatar colors
-  const avatarColors = [
-    "bg-blue-600",
-    "bg-green-600",
-    "bg-red-600",
-    "bg-yellow-600",
-    "bg-purple-600",
-  ];
-
-  const color = user
-    ? avatarColors[user.name.charCodeAt(0) % avatarColors.length]
-    : "bg-gray-600";
-
   // ✅ Only show Charts if logged in
   const navigation = user
     ? [
@@ -79,9 +66,11 @@ export default function Navbar() {
               <div className="flex items-center space-x-3">
                 {user ? (
                   <>
-                    {/* User badge */}
+                    {/* User badge with stored color */}
                     <div
-                      className={`flex items-center justify-center w-8 h-8 rounded-full text-white font-medium ${color}`}
+                      className={`flex items-center justify-center w-8 h-8 rounded-full text-white font-medium ${
+                        user.color || "bg-gray-600"
+                      }`}
                     >
                       {user.name[0].toUpperCase()}
                     </div>

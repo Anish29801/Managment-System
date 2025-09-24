@@ -3,19 +3,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { z, ZodError } from "zod";
-import { User } from "../context/AuthContext";
+import { useAuth, User } from "../context/AuthContext";
 import { Task as TaskType } from "../type";
-
-/**
- * TaskForm.tsx
- * Full-featured modal form for adding/updating tasks.
- *
- * - Wider responsive modal (max-w-4xl)
- * - Two-column layout (form | user details)
- * - Auto-save (debounced PATCH) when editing an existing task
- * - Add / Delete task flows
- * - Zod validation
- */
 
 /* ----------------------------- Zod Schemas ----------------------------- */
 const subtaskSchema = z.object({
@@ -50,6 +39,8 @@ const debounce = (fn: (...args: any[]) => void, delay = 800) => {
 };
 
 const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded }) => {
+  const { color } = useAuth();
+
   /* ------------------------------ Local State ------------------------------ */
   const [title, setTitle] = useState<string>(task?.title || "");
   const [description, setDescription] = useState<string>(task?.description || "");
@@ -70,17 +61,13 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
   const autoUpdate = async (updatedTask: any) => {
     if (!task?._id) return;
     try {
-      // Validate before sending
       taskSchema.parse(updatedTask);
       setSaving(true);
-      await axios.patch(
-        `http://localhost:8000/tasks/${task._id}`,
-        updatedTask,
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-      );
+      await axios.patch(`http://localhost:8000/tasks/${task._id}`, updatedTask, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
       setSaving(false);
       setError(null);
-      // do not call onTaskAdded here (prevents flicker)
     } catch (err: any) {
       setSaving(false);
       if (err instanceof ZodError) setError(err.issues[0].message);
@@ -88,11 +75,9 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
     }
   };
 
-  // stable debounced function reference
   const debouncedAutoUpdate = useMemo(() => debounce(autoUpdate, 800), [task?._id]);
 
   useEffect(() => {
-    // only auto-save if editing an existing task
     if (task?._id) {
       debouncedAutoUpdate({ title, description, status, priority, dueDate, subtasks });
     }
@@ -137,7 +122,6 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
     }
   };
 
-  /* --------------------------- Subtask Handlers --------------------------- */
   const addSubtask = () => setSubtasks([...subtasks, { title: "", status: "pending" }]);
   const updateSubtask = (index: number, field: "title" | "status", value: string) => {
     const copy = [...subtasks];
@@ -146,9 +130,8 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
   };
   const removeSubtask = (index: number) => setSubtasks(subtasks.filter((_, i) => i !== index));
 
-  /* --------------------------- Close & refresh ---------------------------- */
   const handleClose = () => {
-    onTaskAdded(); // refresh dashboard only once when form closes
+    onTaskAdded();
     onClose();
   };
 
@@ -159,20 +142,23 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
       role="dialog"
       aria-modal="true"
     >
-      {/* Modal container - wider and responsive */}
       <div className="w-full max-w-4xl bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl overflow-hidden">
         <div className="flex">
-          {/* Left: Form (60%) */}
+          {/* Left: Form */}
           <div className="w-full md:w-3/5 p-6">
             {/* Header */}
-            <div className="flex justify-between items-start mb-4">
-              <h2 className="text-xl font-semibold text-white">{task ? "Update Task" : "Add Task"}</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2
+                className={`text-xl font-semibold bg-clip-text text-transparent ${color}`}
+              >
+                {task ? "Update Task" : "Add Task"}
+              </h2>
               <button
                 onClick={handleClose}
                 className="text-white font-bold px-2 py-1 rounded hover:bg-white/5"
                 aria-label="Close"
               >
-                X
+                ✕
               </button>
             </div>
 
@@ -246,7 +232,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
                   <button
                     type="button"
                     onClick={addSubtask}
-                    className="px-3 py-1 rounded bg-blue-600 text-white"
+                    className={`px-3 py-1 rounded text-white ${color}`}
                   >
                     + Add Subtask
                   </button>
@@ -276,9 +262,8 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
                         type="button"
                         onClick={() => removeSubtask(idx)}
                         className="px-2 py-2 rounded bg-red-600 text-white"
-                        aria-label={`Remove subtask ${idx + 1}`}
                       >
-                        X
+                        ✕
                       </button>
                     </div>
                   ))}
@@ -292,7 +277,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
                 {!task && (
                   <button
                     type="submit"
-                    className="flex-1 py-2 rounded bg-blue-600 text-white disabled:opacity-60"
+                    className={`flex-1 py-2 rounded text-white ${color} disabled:opacity-60`}
                     disabled={saving}
                   >
                     {saving ? "Adding..." : "Add Task"}
@@ -309,17 +294,8 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
                     {saving ? "Deleting..." : "Delete Task"}
                   </button>
                 )}
-
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className="py-2 px-4 rounded bg-gray-600 text-white"
-                >
-                  Close
-                </button>
               </div>
 
-              {/* small saving indicator for auto-save */}
               {task?._id && (
                 <p className="text-gray-400 text-xs mt-1">
                   {saving ? "Saving changes..." : "Edits are auto-saved."}
@@ -328,10 +304,10 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
             </form>
           </div>
 
-          {/* Right: User card / Details (40%) */}
+          {/* Right: User Info */}
           <aside className="hidden md:block md:w-2/5 bg-gray-700/20 p-6 border-l border-gray-600">
             <div className="h-full flex flex-col justify-start items-center text-center text-white">
-              <div className="w-24 h-24 rounded-full bg-gray-800 flex items-center justify-center mb-4">
+              <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-4 ${color}`}>
                 <span className="text-xl font-bold">{user?.name?.[0] || "U"}</span>
               </div>
 

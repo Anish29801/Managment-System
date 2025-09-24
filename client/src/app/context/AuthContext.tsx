@@ -6,10 +6,12 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  color?: string;
 }
 
 interface AuthContextType {
   user: User | null;
+  color: string;
   setUser: (user: User | null) => void;
   logout: () => void;
 }
@@ -18,6 +20,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+
+  // 🎨 Avatar colors list
+  const avatarColors = [
+    "bg-blue-600",
+    "bg-green-600",
+    "bg-red-600",
+    "bg-yellow-600",
+    "bg-purple-600",
+  ];
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -30,7 +41,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
         if (res.ok) {
           const data = await res.json();
-          setUser(data.user);
+
+          // 🎨 assign color based on first letter
+          const name = data.user.name || "G";
+          const color =
+            avatarColors[name.charCodeAt(0) % avatarColors.length] || "bg-gray-600";
+
+          setUser({ ...data.user, color });
         } else {
           setUser(null);
         }
@@ -48,9 +65,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider
+  value={{
+    user,
+    color: user?.color || "bg-gray-600",
+    setUser,
+    logout,
+  }}
+>
+  {children}
+</AuthContext.Provider>
+
   );
 };
 
