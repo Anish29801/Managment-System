@@ -148,12 +148,16 @@ export default function Dashboard() {
 
       {/* Main content */}
       <div className="relative z-10 w-full">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-          <h1 className="text-2xl font-semibold">{greeting}</h1>
+        {/* Header & Branding */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-2 gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+              📝
+            </div>
+            <h1 className="text-3xl font-bold text-white tracking-wide">TaskMaster</h1>
+          </div>
 
           <div className="flex items-center gap-4 w-full md:w-auto">
-            {/* Search Box */}
             <div className="relative w-full md:w-64">
               <input
                 type="text"
@@ -177,6 +181,11 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Subheading */}
+        <p className="text-gray-300 text-sm mb-6">
+          Organize your day. Stay productive. Manage tasks effortlessly with <span className="text-blue-400 font-semibold">TaskMaster</span>.
+        </p>
+
         {loading ? (
           <p className="text-center mt-10">Loading...</p>
         ) : !user ? (
@@ -185,10 +194,11 @@ export default function Dashboard() {
           </p>
         ) : (
           <DragDropContext onDragEnd={handleDragEnd}>
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex flex-col md:flex-row gap-6">
               <TaskSection
                 droppableId="pending"
                 title="Pending"
+                description="Tasks you need to start"
                 tasks={pendingTasks}
                 onUpdate={handleUpdate}
                 onDelete={handleDelete}
@@ -196,6 +206,7 @@ export default function Dashboard() {
               <TaskSection
                 droppableId="inprogress"
                 title="In Progress"
+                description="Tasks you are working on"
                 tasks={inProgressTasks}
                 onUpdate={handleUpdate}
                 onDelete={handleDelete}
@@ -203,6 +214,7 @@ export default function Dashboard() {
               <TaskSection
                 droppableId="completed"
                 title="Completed"
+                description="Tasks you have finished"
                 tasks={completedTasks}
                 onUpdate={handleUpdate}
                 onDelete={handleDelete}
