@@ -4,7 +4,8 @@ import React, { useEffect, useMemo, useState, useRef } from "react";
 import axios from "axios";
 import { z, ZodError } from "zod";
 import { useAuth } from "../context/AuthContext";
-import { User } from "../type";import { Task as TaskType } from "../type";
+import { User } from "../type";
+import { Task as TaskType } from "../type";
 
 /* ----------------------------- Zod Schemas ----------------------------- */
 const subtaskSchema = z.object({
@@ -220,7 +221,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
                   className="w-full px-3 py-2 rounded bg-gray-700 text-white"
-                  min={today} // prevent past dates
+                  min={today}
                 />
               </div>
 
@@ -233,7 +234,12 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
                   </button>
                 </div>
 
-                <div className="space-y-2">
+                {/* Scrollable area */}
+                <div
+                  className={`space-y-2 transition-all duration-300 ${
+                    subtasks.length > 2 ? "max-h-48 overflow-y-auto pr-1 custom-scrollbar" : ""
+                  }`}
+                >
                   {subtasks.length === 0 && <p className="text-gray-400 text-sm">No subtasks yet.</p>}
                   {subtasks.map((st, idx) => (
                     <div key={idx} className="flex gap-2 items-center">
@@ -322,6 +328,23 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
           </aside>
         </div>
       </div>
+
+      {/* Custom scrollbar styles */}
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: #4b5563; /* gray-600 */
+          border-radius: 9999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background-color: #6b7280; /* gray-500 */
+        }
+      `}</style>
     </div>
   );
 };

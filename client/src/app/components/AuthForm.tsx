@@ -6,6 +6,7 @@ import { z, ZodError } from "zod";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import { Eye, EyeOff } from "lucide-react"; // Make sure lucide-react is installed
+import Toast from "./Toast";
 
 // Zod Schemas
 const signupSchema = z
@@ -36,7 +37,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; color: "green" | "red" } | null>(null);
 
   const API_BASE_URL = "http://localhost:8000/users";
   const router = useRouter();
@@ -44,7 +45,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
 
     try {
       if (type === "signup") {
@@ -68,31 +68,34 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         setUser(res.data.user);
+        setToast({ message: type === "signup" ? "Sign Up Successful!" : "Login Successful!", color: "green" });
         router.push("/");
       }
     } catch (err) {
       if (err instanceof ZodError) {
-        setError(err.issues[0].message);
+        setToast({ message: err.issues[0].message, color: "red" });
       } else if (err instanceof AxiosError) {
-        setError(err.response?.data?.error || "An error occurred");
+        setToast({ message: err.response?.data?.error || "An error occurred", color: "red" });
       } else {
-        setError("An unexpected error occurred");
+        setToast({ message: "An unexpected error occurred", color: "red" });
       }
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black px-4">
-      <div className="w-full max-w-md bg-gray-800/90 backdrop-blur-md p-8 rounded-2xl shadow-lg border border-gray-700">
+      <div className="w-full max-w-md bg-gray-800/90 backdrop-blur-md p-8 rounded-2xl shadow-lg border border-gray-700 relative">
+        {/* Toast */}
+        {toast && <Toast message={toast.message} color={toast.color} onClose={() => setToast(null)} />}
+
         <h2 className="text-3xl sm:text-4xl font-semibold mb-8 text-center text-white tracking-wide drop-shadow-md">
           {type === "signup" ? "Sign Up" : "Login"}
         </h2>
+
         <form onSubmit={handleSubmit} className="space-y-5">
           {type === "signup" && (
             <div>
-              <label className="block text-sm font-medium text-gray-300">
-                Name
-              </label>
+              <label className="block text-sm font-medium text-gray-300">Name</label>
               <input
                 type="text"
                 value={name}
@@ -104,9 +107,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-300">
-              Email
-            </label>
+            <label className="block text-sm font-medium text-gray-300">Email</label>
             <input
               type="email"
               value={email}
@@ -117,9 +118,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
           </div>
 
           <div className="relative">
-            <label className="block text-sm font-medium text-gray-300">
-              Password
-            </label>
+            <label className="block text-sm font-medium text-gray-300">Password</label>
             <input
               type={showPassword ? "text" : "password"}
               value={password}
@@ -138,9 +137,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
 
           {type === "signup" && (
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-300">
-                Confirm Password
-              </label>
+              <label className="block text-sm font-medium text-gray-300">Confirm Password</label>
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 value={confirmPassword}
@@ -158,10 +155,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
             </div>
           )}
 
-          {error && (
-            <p className="text-red-400 text-sm font-medium text-center">{error}</p>
-          )}
-
           <button
             type="submit"
             className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 text-white font-semibold rounded-lg shadow-md transition"
@@ -171,9 +164,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-400">
-          {type === "signup"
-            ? "Already have an account?"
-            : "Don't have an account?"}{" "}
+          {type === "signup" ? "Already have an account?" : "Don't have an account?"}{" "}
           <button
             type="button"
             onClick={() => router.push(type === "signup" ? "/login" : "/signup")}
