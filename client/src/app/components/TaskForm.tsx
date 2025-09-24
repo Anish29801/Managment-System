@@ -1,20 +1,25 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { z, ZodError } from "zod";
 import { User } from "../context/AuthContext";
-import { Task } from "../type";
+import { Task as TaskType } from "../type";
 
-interface TaskFormProps {
-  user: User;
-  onClose: () => void;
-  onTaskAdded: () => void;
-  task?: Task | null;
-}
+/**
+ * TaskForm.tsx
+ * Full-featured modal form for adding/updating tasks.
+ *
+ * - Wider responsive modal (max-w-4xl)
+ * - Two-column layout (form | user details)
+ * - Auto-save (debounced PATCH) when editing an existing task
+ * - Add / Delete task flows
+ * - Zod validation
+ */
 
+/* ----------------------------- Zod Schemas ----------------------------- */
 const subtaskSchema = z.object({
-  title: z.string().min(1, "*"),
+  title: z.string().min(1, "Subtask title is required"),
   status: z.enum(["pending", "completed"]).default("pending"),
 });
 
@@ -27,67 +32,91 @@ const taskSchema = z.object({
   subtasks: z.array(subtaskSchema).optional(),
 });
 
-// ---- Debounce helper ----
-const debounce = (fn: Function, delay = 800) => {
-  let timer: NodeJS.Timeout;
+/* ------------------------------ Props Types ---------------------------- */
+interface TaskFormProps {
+  user: User;
+  onClose: () => void;
+  onTaskAdded: () => void; // called after add or delete to refresh list
+  task?: TaskType | null; // when present -> edit mode
+}
+
+/* ---------------------------- Debounce Helper -------------------------- */
+const debounce = (fn: (...args: any[]) => void, delay = 800) => {
+  let timer: ReturnType<typeof setTimeout> | null = null;
   return (...args: any[]) => {
-    clearTimeout(timer);
+    if (timer) clearTimeout(timer);
     timer = setTimeout(() => fn(...args), delay);
   };
 };
 
-export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded }) => {
-  const [title, setTitle] = useState(task?.title || "");
-  const [description, setDescription] = useState(task?.description || "");
-  const [status, setStatus] = useState<"pending" | "inprogress" | "completed">(task?.status || "pending");
-  const [priority, setPriority] = useState<"low" | "medium" | "high">(task?.priority || "medium");
-  const [dueDate, setDueDate] = useState(task?.dueDate ? task.dueDate.split("T")[0] : "");
-  const [subtasks, setSubtasks] = useState<{ title: string; status: "pending" | "completed" }[]>(task?.subtasks || []);
+const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded }) => {
+  /* ------------------------------ Local State ------------------------------ */
+  const [title, setTitle] = useState<string>(task?.title || "");
+  const [description, setDescription] = useState<string>(task?.description || "");
+  const [status, setStatus] = useState<"pending" | "inprogress" | "completed">(
+    (task?.status as any) || "pending"
+  );
+  const [priority, setPriority] = useState<"low" | "medium" | "high">(
+    (task?.priority as any) || "medium"
+  );
+  const [dueDate, setDueDate] = useState<string>(task?.dueDate ? task.dueDate.split("T")[0] : "");
+  const [subtasks, setSubtasks] = useState<{ title: string; status: "pending" | "completed" }[]>(
+    (Array.isArray((task as any)?.subtasks) ? (task as any).subtasks : []) || []
+  );
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  // ---- Auto Update ----
+  /* ----------------------------- Auto Update ------------------------------ */
   const autoUpdate = async (updatedTask: any) => {
     if (!task?._id) return;
     try {
+      // Validate before sending
       taskSchema.parse(updatedTask);
+      setSaving(true);
       await axios.patch(
         `http://localhost:8000/tasks/${task._id}`,
         updatedTask,
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
-      // ❌ do not call onTaskAdded here → prevents dashboard flicker
+      setSaving(false);
+      setError(null);
+      // do not call onTaskAdded here (prevents flicker)
     } catch (err: any) {
+      setSaving(false);
       if (err instanceof ZodError) setError(err.issues[0].message);
-      else setError(err.response?.data?.error || "Unexpected error occurred");
+      else setError(err?.response?.data?.error || "Auto-update failed");
     }
   };
 
-  // Stable debounce
-  const debouncedAutoUpdate = useMemo(() => debounce(autoUpdate, 800), []);
+  // stable debounced function reference
+  const debouncedAutoUpdate = useMemo(() => debounce(autoUpdate, 800), [task?._id]);
 
-  // Auto update when editing existing task
   useEffect(() => {
+    // only auto-save if editing an existing task
     if (task?._id) {
       debouncedAutoUpdate({ title, description, status, priority, dueDate, subtasks });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title, description, status, priority, dueDate, subtasks]);
 
-  // ---- Handlers ----
+  /* ------------------------------- Handlers ------------------------------- */
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     try {
-      taskSchema.parse({ title, description, status, priority, dueDate, subtasks });
-      await axios.post(
-        "http://localhost:8000/tasks",
-        { title, description, status, priority, dueDate, subtasks, createdBy: user.id },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-      );
+      const payload = { title, description, status, priority, dueDate, subtasks, createdBy: user.id };
+      taskSchema.parse(payload);
+      setSaving(true);
+      await axios.post("http://localhost:8000/tasks", payload, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setSaving(false);
       onTaskAdded();
       onClose();
     } catch (err: any) {
+      setSaving(false);
       if (err instanceof ZodError) setError(err.issues[0].message);
-      else setError(err.response?.data?.error || "Failed to add task");
+      else setError(err?.response?.data?.error || "Failed to add task");
     }
   };
 
@@ -95,158 +124,235 @@ export const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskA
     if (!task?._id) return;
     setError(null);
     try {
+      setSaving(true);
       await axios.delete(`http://localhost:8000/tasks/${task._id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+      setSaving(false);
       onTaskAdded();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.error || "Failed to delete task");
+      setSaving(false);
+      setError(err?.response?.data?.error || "Failed to delete task");
     }
   };
 
-  // ---- Subtask Handlers ----
+  /* --------------------------- Subtask Handlers --------------------------- */
   const addSubtask = () => setSubtasks([...subtasks, { title: "", status: "pending" }]);
   const updateSubtask = (index: number, field: "title" | "status", value: string) => {
-    const updated = [...subtasks];
-    (updated[index] as any)[field] = value;
-    setSubtasks(updated);
+    const copy = [...subtasks];
+    (copy[index] as any)[field] = value;
+    setSubtasks(copy);
   };
-  const deleteSubtask = (index: number) => setSubtasks(subtasks.filter((_, i) => i !== index));
+  const removeSubtask = (index: number) => setSubtasks(subtasks.filter((_, i) => i !== index));
 
+  /* --------------------------- Close & refresh ---------------------------- */
+  const handleClose = () => {
+    onTaskAdded(); // refresh dashboard only once when form closes
+    onClose();
+  };
+
+  /* ------------------------------- Render -------------------------------- */
   return (
-    <div className="bg-gray-800 p-6 rounded-md relative w-full max-w-md mx-auto">
-      {/* Close Button */}
-      <button
-        onClick={() => {
-          onTaskAdded(); // refresh dashboard only once when form closes
-          onClose();
-        }}
-        className="absolute top-2 right-2 text-white font-bold text-lg"
-      >
-        X
-      </button>
-
-      <h2 className="text-xl font-bold mb-4 text-white">{task ? "Update Task" : "Add Task"}</h2>
-
-      <form className="space-y-3" onSubmit={!task ? handleAdd : undefined}>
-        {/* Title */}
-        <div>
-          <label className="text-gray-300">Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full mt-1 px-3 py-2 bg-gray-700 text-white rounded-md"
-            required
-          />
-        </div>
-
-        {/* Description */}
-        <div>
-          <label className="text-gray-300">Description</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full mt-1 px-3 py-2 bg-gray-700 text-white rounded-md"
-          />
-        </div>
-
-        {/* Status & Priority */}
-        <div className="flex gap-2">
-          <div className="flex-1">
-            <label className="text-gray-300">Status</label>
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value as any)}
-              className="w-full mt-1 px-3 py-2 bg-gray-700 text-white rounded-md"
-            >
-              <option value="pending">Pending</option>
-              <option value="inprogress">In Progress</option>
-              <option value="completed">Completed</option>
-            </select>
-          </div>
-
-          <div className="flex-1">
-            <label className="text-gray-300">Priority</label>
-            <select
-              value={priority}
-              onChange={(e) => setPriority(e.target.value as any)}
-              className="w-full mt-1 px-3 py-2 bg-gray-700 text-white rounded-md"
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Due Date */}
-        <div>
-          <label className="text-gray-300">Due Date</label>
-          <input
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            className="w-full mt-1 px-3 py-2 bg-gray-700 text-white rounded-md"
-          />
-        </div>
-
-        {/* Subtasks */}
-        <div className="mt-4 p-3 bg-gray-700 rounded-md">
-          {subtasks.map((st, i) => (
-            <div key={i} className="flex items-center gap-2 mt-2">
-              <input
-                type="text"
-                value={st.title}
-                onChange={(e) => updateSubtask(i, "title", e.target.value)}
-                placeholder="Subtask title"
-                className="flex-1 px-3 py-2 rounded-md bg-gray-600 text-white"
-              />
-              <select
-                value={st.status}
-                onChange={(e) => updateSubtask(i, "status", e.target.value)}
-                className="px-2 py-2 rounded-md bg-gray-600 text-white"
-              >
-                <option value="pending">Pending</option>
-                <option value="completed">Completed</option>
-              </select>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      role="dialog"
+      aria-modal="true"
+    >
+      {/* Modal container - wider and responsive */}
+      <div className="w-full max-w-4xl bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl overflow-hidden">
+        <div className="flex">
+          {/* Left: Form (60%) */}
+          <div className="w-full md:w-3/5 p-6">
+            {/* Header */}
+            <div className="flex justify-between items-start mb-4">
+              <h2 className="text-xl font-semibold text-white">{task ? "Update Task" : "Add Task"}</h2>
               <button
-                type="button"
-                onClick={() => deleteSubtask(i)}
-                className="px-2 py-2 bg-red-600 rounded-md text-white"
+                onClick={handleClose}
+                className="text-white font-bold px-2 py-1 rounded hover:bg-white/5"
+                aria-label="Close"
               >
                 X
               </button>
             </div>
-          ))}
-          <button
-            type="button"
-            onClick={addSubtask}
-            className="mt-3 px-3 py-2 bg-blue-600 text-white rounded-md"
-          >
-            + Add Subtask
-          </button>
+
+            <form onSubmit={!task ? handleAdd : (e) => e.preventDefault()} className="space-y-4">
+              {/* Title */}
+              <div>
+                <label className="text-gray-300 block mb-1">Title</label>
+                <input
+                  className="w-full px-3 py-2 rounded bg-gray-700 text-white focus:outline-none"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="text-gray-300 block mb-1">Description</label>
+                <textarea
+                  className="w-full px-3 py-2 rounded bg-gray-700 text-white focus:outline-none"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={3}
+                />
+              </div>
+
+              {/* Status + Priority */}
+              <div className="flex gap-3">
+                <div className="flex-1">
+                  <label className="text-gray-300 block mb-1">Status</label>
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value as any)}
+                    className="w-full px-3 py-2 rounded bg-gray-700 text-white"
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="inprogress">In Progress</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
+
+                <div className="flex-1">
+                  <label className="text-gray-300 block mb-1">Priority</label>
+                  <select
+                    value={priority}
+                    onChange={(e) => setPriority(e.target.value as any)}
+                    className="w-full px-3 py-2 rounded bg-gray-700 text-white"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Due Date */}
+              <div>
+                <label className="text-gray-300 block mb-1">Due Date</label>
+                <input
+                  type="date"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                  className="w-full px-3 py-2 rounded bg-gray-700 text-white"
+                />
+              </div>
+
+              {/* Subtasks */}
+              <div className="p-3 bg-gray-800 rounded">
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-white font-semibold">Subtasks</h3>
+                  <button
+                    type="button"
+                    onClick={addSubtask}
+                    className="px-3 py-1 rounded bg-blue-600 text-white"
+                  >
+                    + Add Subtask
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {subtasks.length === 0 && (
+                    <p className="text-gray-400 text-sm">No subtasks yet.</p>
+                  )}
+                  {subtasks.map((st, idx) => (
+                    <div key={idx} className="flex gap-2 items-center">
+                      <input
+                        className="flex-1 px-3 py-2 rounded bg-gray-700 text-white"
+                        placeholder="Subtask title"
+                        value={st.title}
+                        onChange={(e) => updateSubtask(idx, "title", e.target.value)}
+                      />
+                      <select
+                        value={st.status}
+                        onChange={(e) => updateSubtask(idx, "status", e.target.value)}
+                        className="px-2 py-2 rounded bg-gray-700 text-white"
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => removeSubtask(idx)}
+                        className="px-2 py-2 rounded bg-red-600 text-white"
+                        aria-label={`Remove subtask ${idx + 1}`}
+                      >
+                        X
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {error && <p className="text-red-400 text-sm">{error}</p>}
+
+              {/* Action buttons */}
+              <div className="flex gap-3 mt-2">
+                {!task && (
+                  <button
+                    type="submit"
+                    className="flex-1 py-2 rounded bg-blue-600 text-white disabled:opacity-60"
+                    disabled={saving}
+                  >
+                    {saving ? "Adding..." : "Add Task"}
+                  </button>
+                )}
+
+                {task && (
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    className="flex-1 py-2 rounded bg-red-600 text-white disabled:opacity-60"
+                    disabled={saving}
+                  >
+                    {saving ? "Deleting..." : "Delete Task"}
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="py-2 px-4 rounded bg-gray-600 text-white"
+                >
+                  Close
+                </button>
+              </div>
+
+              {/* small saving indicator for auto-save */}
+              {task?._id && (
+                <p className="text-gray-400 text-xs mt-1">
+                  {saving ? "Saving changes..." : "Edits are auto-saved."}
+                </p>
+              )}
+            </form>
+          </div>
+
+          {/* Right: User card / Details (40%) */}
+          <aside className="hidden md:block md:w-2/5 bg-gray-700/20 p-6 border-l border-gray-600">
+            <div className="h-full flex flex-col justify-start items-center text-center text-white">
+              <div className="w-24 h-24 rounded-full bg-gray-800 flex items-center justify-center mb-4">
+                <span className="text-xl font-bold">{user?.name?.[0] || "U"}</span>
+              </div>
+
+              <div className="mb-4">
+                <h4 className="font-semibold">{user?.name || "Unknown User"}</h4>
+                <p className="text-sm text-gray-200/80">{user?.email || "no-email@example.com"}</p>
+              </div>
+
+              <div className="text-left text-sm bg-gray-800/40 p-3 rounded w-full">
+                <p className="text-gray-300 font-semibold mb-1">User Details</p>
+                <p className="text-gray-200"><strong>Name:</strong> {user?.name}</p>
+                <p className="text-gray-200"><strong>Email:</strong> {user?.email}</p>
+              </div>
+
+              <blockquote className="mt-6 text-blue-200 italic text-sm">
+                "The only way to do great work is to love what you do."
+              </blockquote>
+            </div>
+          </aside>
         </div>
-
-        {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
-
-        {!task && (
-          <button type="submit" className="w-full mt-4 py-2 bg-blue-600 text-white rounded-md">
-            Add Task
-          </button>
-        )}
-
-        {task && (
-          <button
-            type="button"
-            onClick={handleDelete}
-            className="w-full mt-4 py-2 bg-red-600 text-white rounded-md"
-          >
-            Delete Task
-          </button>
-        )}
-      </form>
+      </div>
     </div>
   );
 };
