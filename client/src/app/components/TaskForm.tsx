@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import axios from "axios";
 import { z, ZodError } from "zod";
 import { useAuth, User } from "../context/AuthContext";
@@ -25,8 +25,8 @@ const taskSchema = z.object({
 interface TaskFormProps {
   user: User;
   onClose: () => void;
-  onTaskAdded: () => void; // called after add or delete to refresh list
-  task?: TaskType | null; // when present -> edit mode
+  onTaskAdded: () => void;
+  task?: TaskType | null;
 }
 
 /* ---------------------------- Debounce Helper -------------------------- */
@@ -40,8 +40,8 @@ const debounce = (fn: (...args: any[]) => void, delay = 800) => {
 
 const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded }) => {
   const { color } = useAuth();
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  /* ------------------------------ Local State ------------------------------ */
   const [title, setTitle] = useState<string>(task?.title || "");
   const [description, setDescription] = useState<string>(task?.description || "");
   const [status, setStatus] = useState<"pending" | "inprogress" | "completed">(
@@ -81,7 +81,6 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
     if (task?._id) {
       debouncedAutoUpdate({ title, description, status, priority, dueDate, subtasks });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title, description, status, priority, dueDate, subtasks]);
 
   /* ------------------------------- Handlers ------------------------------- */
@@ -130,37 +129,28 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
   };
   const removeSubtask = (index: number) => setSubtasks(subtasks.filter((_, i) => i !== index));
 
-  const handleClose = () => {
-    onTaskAdded();
-    onClose();
+  const handleClickOutside = (e: MouseEvent) => {
+    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      onTaskAdded();
+      onClose();
+    }
   };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   /* ------------------------------- Render -------------------------------- */
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-      role="dialog"
-      aria-modal="true"
-    >
-      <div className="w-full max-w-4xl bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="dialog" aria-modal="true">
+      <div ref={modalRef} className="w-full max-w-4xl bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl overflow-hidden">
         <div className="flex">
           {/* Left: Form */}
           <div className="w-full md:w-3/5 p-6">
-            {/* Header */}
-            <div className="flex justify-between items-center mb-4">
-              <h2
-                className={`text-xl font-semibold bg-clip-text text-transparent ${color}`}
-              >
-                {task ? "Update Task" : "Add Task"}
-              </h2>
-              <button
-                onClick={handleClose}
-                className="text-white font-bold px-2 py-1 rounded hover:bg-white/5"
-                aria-label="Close"
-              >
-                ✕
-              </button>
-            </div>
+            <h2 className={`text-xl font-semibold mb-4 bg-clip-text text-transparent ${color}`}>
+              {task ? "Update Task" : "Add Task"}
+            </h2>
 
             <form onSubmit={!task ? handleAdd : (e) => e.preventDefault()} className="space-y-4">
               {/* Title */}
@@ -229,19 +219,13 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
               <div className="p-3 bg-gray-800 rounded">
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="text-white font-semibold">Subtasks</h3>
-                  <button
-                    type="button"
-                    onClick={addSubtask}
-                    className={`px-3 py-1 rounded text-white ${color}`}
-                  >
+                  <button type="button" onClick={addSubtask} className={`px-3 py-1 rounded text-white ${color}`}>
                     + Add Subtask
                   </button>
                 </div>
 
                 <div className="space-y-2">
-                  {subtasks.length === 0 && (
-                    <p className="text-gray-400 text-sm">No subtasks yet.</p>
-                  )}
+                  {subtasks.length === 0 && <p className="text-gray-400 text-sm">No subtasks yet.</p>}
                   {subtasks.map((st, idx) => (
                     <div key={idx} className="flex gap-2 items-center">
                       <input
@@ -263,7 +247,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
                         onClick={() => removeSubtask(idx)}
                         className="px-2 py-2 rounded bg-red-600 text-white"
                       >
-                        ✕
+                        Remove
                       </button>
                     </div>
                   ))}
