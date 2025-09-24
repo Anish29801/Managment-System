@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { FaSearch } from "react-icons/fa";
 import { useAuth } from "./context/AuthContext";
@@ -17,13 +17,14 @@ export default function Dashboard() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  /* ---------------- Fetch Tasks from server ---------------- */
-  const fetchTasks = async () => {
+  /* ---------------- Fetch Tasks from backend ---------------- */
+  const fetchTasks = async (search?: string) => {
     if (!user) return;
     setLoading(true);
     try {
       const res = await axios.get<Task[]>("http://localhost:8000/tasks", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        params: search ? { search } : {},
       });
       setTasks(Array.isArray(res.data) ? res.data : []);
     } catch (err: any) {
@@ -34,6 +35,7 @@ export default function Dashboard() {
     }
   };
 
+  /* ---------------- Initial fetch ---------------- */
   useEffect(() => {
     fetchTasks();
   }, [user]);
@@ -55,7 +57,7 @@ export default function Dashboard() {
       await axios.delete(`http://localhost:8000/tasks/${taskId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      fetchTasks();
+      fetchTasks(searchQuery.trim()); // refresh with current search
     } catch (err: any) {
       console.error("Failed to delete task:", err.response?.data || err.message);
     }
@@ -82,22 +84,20 @@ export default function Dashboard() {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      fetchTasks();
+      fetchTasks(searchQuery.trim()); // refresh with current search
     } catch (err: any) {
       console.error("Failed to update task status:", err.response?.data || err.message);
     }
   };
 
-  /* ---------------- Search Filtering ---------------- */
-  const filteredTasks = useMemo(() => {
-    if (!searchQuery.trim()) return tasks;
-    const query = searchQuery.toLowerCase();
-    return tasks.filter((t) => t.title.toLowerCase().includes(query));
-  }, [tasks, searchQuery]);
+  /* ---------------- Local search filtering for instant UI ---------------- */
+  const displayedTasks = tasks.filter((t) =>
+    t.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const pendingTasks = filteredTasks.filter((t) => t.status === "pending");
-  const inProgressTasks = filteredTasks.filter((t) => t.status === "inprogress");
-  const completedTasks = filteredTasks.filter((t) => t.status === "completed");
+  const pendingTasks = displayedTasks.filter((t) => t.status === "pending");
+  const inProgressTasks = displayedTasks.filter((t) => t.status === "inprogress");
+  const completedTasks = displayedTasks.filter((t) => t.status === "completed");
 
   /* ---------------- Greeting ---------------- */
   const greeting = user
@@ -206,7 +206,7 @@ export default function Dashboard() {
                 user={user}
                 task={editingTask}
                 onClose={() => setShowForm(false)}
-                onTaskAdded={fetchTasks}
+                onTaskAdded={() => fetchTasks(searchQuery.trim())} // refresh backend
               />
             </div>
           </div>
