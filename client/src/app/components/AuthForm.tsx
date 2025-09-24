@@ -5,6 +5,7 @@ import axios, { AxiosError } from "axios";
 import { z, ZodError } from "zod";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
+import axiosInstance from "@/utils/axiosConfg";
 
 // Zod Schemas
 const signupSchema = z.object({
@@ -51,10 +52,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
       const payload =
         type === "signup" ? { name, email, password } : { email, password };
 
-      const res = await axios.post(url, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
-
+      const res = await axiosInstance.post(url, payload);
+      
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
 

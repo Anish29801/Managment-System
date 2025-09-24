@@ -1,13 +1,10 @@
-"use client";
-
-import { User } from "../context/AuthContext";
+import { User } from "../type";
 
 interface GreetingProps {
   user: User | null;
 }
 
 export const Greeting: React.FC<GreetingProps> = ({ user }) => {
-  // Simple greeting based on time
   const hour = new Date().getHours();
   const timeOfDay =
     hour < 12 ? "Good Morning" : hour < 16 ? "Good Afternoon" : "Good Evening";

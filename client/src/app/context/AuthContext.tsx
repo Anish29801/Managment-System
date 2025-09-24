@@ -1,14 +1,13 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import {User, AuthContextType} from "../type"
+import { User, AuthContextType } from "../type";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  // 🎨 Avatar colors list
   const avatarColors = [
     "bg-blue-600",
     "bg-green-600",
@@ -26,13 +25,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const res = await fetch("http://localhost:8000/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
+
         if (res.ok) {
           const data = await res.json();
 
-          // 🎨 assign color based on first letter
-          const name = data.user.name || "G";
+          // 🎨 assign color based on first letter of the name
+          const name = data.user?.name || "G";
           const color =
-            avatarColors[name.charCodeAt(0) % avatarColors.length] || "bg-gray-600";
+            avatarColors[name.charCodeAt(0) % avatarColors.length] ||
+            "bg-gray-600";
 
           setUser({ ...data.user, color });
         } else {
@@ -53,21 +54,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-  value={{
-    user,
-    color: user?.color || "bg-gray-600",
-    setUser,
-    logout,
-  }}
->
-  {children}
-</AuthContext.Provider>
-
+      value={{
+        user,
+        color: user?.color || "bg-gray-600",
+        setUser,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within AuthProvider");
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
   return context;
 };
