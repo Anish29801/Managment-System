@@ -1,12 +1,14 @@
+// client/src/components/AuthForm.tsx
 "use client";
 
 import React, { useState } from "react";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { z, ZodError } from "zod";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
-import { Eye, EyeOff } from "lucide-react"; // Make sure lucide-react is installed
+import { Eye, EyeOff } from "lucide-react";
 import Toast from "./Toast";
+import axiosInstance from "@/utils/axiosConfg";
 
 // Zod Schemas
 const signupSchema = z
@@ -39,7 +41,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [toast, setToast] = useState<{ message: string; color: "green" | "red" } | null>(null);
 
-  const API_BASE_URL = "http://localhost:8000/users";
   const router = useRouter();
   const { setUser } = useAuth();
 
@@ -54,28 +55,31 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
       }
 
       const url =
-        type === "signup"
-          ? `${API_BASE_URL}/signup`
-          : `${API_BASE_URL}/login`;
+        type === "signup" ? "/users/signup" : "/users/login";
 
       const payload =
         type === "signup" ? { name, email, password } : { email, password };
 
-      const res = await axios.post(url, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
+      // ✅ Use axiosInstance instead of axios
+      const res = await axiosInstance.post(url, payload);
 
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         setUser(res.data.user);
-        setToast({ message: type === "signup" ? "Sign Up Successful!" : "Login Successful!", color: "green" });
+        setToast({
+          message: type === "signup" ? "Sign Up Successful!" : "Login Successful!",
+          color: "green",
+        });
         router.push("/");
       }
     } catch (err) {
       if (err instanceof ZodError) {
         setToast({ message: err.issues[0].message, color: "red" });
       } else if (err instanceof AxiosError) {
-        setToast({ message: err.response?.data?.error || "An error occurred", color: "red" });
+        setToast({
+          message: err.response?.data?.error || "An error occurred",
+          color: "red",
+        });
       } else {
         setToast({ message: "An unexpected error occurred", color: "red" });
       }
@@ -86,7 +90,13 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black px-4">
       <div className="w-full max-w-md bg-gray-800/90 backdrop-blur-md p-8 rounded-2xl shadow-lg border border-gray-700 relative">
         {/* Toast */}
-        {toast && <Toast message={toast.message} color={toast.color} onClose={() => setToast(null)} />}
+        {toast && (
+          <Toast
+            message={toast.message}
+            color={toast.color}
+            onClose={() => setToast(null)}
+          />
+        )}
 
         <h2 className="text-3xl sm:text-4xl font-semibold mb-8 text-center text-white tracking-wide drop-shadow-md">
           {type === "signup" ? "Sign Up" : "Login"}
@@ -137,7 +147,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
 
           {type === "signup" && (
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-300">Confirm Password</label>
+              <label className="block text-sm font-medium text-gray-300">
+                Confirm Password
+              </label>
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 value={confirmPassword}
