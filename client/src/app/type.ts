@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { ReactNode } from "react";
 
 export interface User {
   id: string;
@@ -53,4 +54,9 @@ export interface TaskItemProps {
   task: Task;
   onUpdate: (task: Task) => void;
   onDelete: (id: string) => void;
+}
+export interface CardProps {
+  icon: ReactNode;
+  title: string;
+  description: string;
 }

@@ -7,6 +7,7 @@ import { Droppable, Draggable } from "@hello-pangea/dnd";
 interface TaskSectionProps {
   title: string;
   tasks: Task[];
+    description?: string;
   onUpdate: (task: Task) => void;
   onDelete: (id: string) => void;
   droppableId: string;
@@ -46,7 +47,7 @@ export const TaskSection: React.FC<TaskSectionProps> = ({
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                       >
-                        <TaskItem task={task} onUpdate={onUpdate} />
+                        <TaskItem task={task} onUpdate={onUpdate} onDelete={onDelete}/>
                       </div>
                     )}
                   </Draggable>

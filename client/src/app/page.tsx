@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaTasks, FaChartLine, FaCheckCircle } from "react-icons/fa";
 import { useAuth } from "./context/AuthContext";
 import TaskForm from "./components/TaskForm";
 import { Task } from "./type";
 import { TaskSection } from "./components/TaskSection";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
+import HeroSection from "./components/HeroSection";
+import Card from "./components/Card";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -112,14 +114,11 @@ export default function Dashboard() {
       <div className="absolute inset-0 bg-white/5 backdrop-blur-sm pointer-events-none z-0"></div>
 
       <div className="relative z-10 w-full">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-2 gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-              📝
-            </div>
-            <h1 className="text-3xl font-bold text-white tracking-wide">TaskMaster</h1>
-          </div>
+        {/* 🔹 HERO SECTION */}
+        <HeroSection />
 
+        {/* 🔹 Header Section */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-2 gap-4 mt-10">
           <div className="flex items-center gap-4 w-full md:w-auto">
             <div className="relative w-full md:w-64">
               <input
@@ -145,14 +144,37 @@ export default function Dashboard() {
         </div>
 
         <p className="text-gray-300 text-sm mb-6">
-          Organize your day. Stay productive. Manage tasks effortlessly with{" "}
-          <span className="text-blue-400 font-semibold">TaskMaster</span>.
+          {greeting}. Manage your tasks effortlessly and track progress.
         </p>
 
         {!user ? (
-          <p className="text-red-400 text-lg font-semibold text-center mt-10">
-            Please Login
-          </p>
+          <div className="mt-10 flex flex-col items-center gap-8">
+            {/* Styled Login Message */}
+            <div className="bg-red-900/50 border border-red-500 rounded-xl px-6 py-4 text-center shadow-lg">
+              <p className="text-red-300 text-lg font-semibold">
+                🚨 Please login to access your personalized task dashboard
+              </p>
+            </div>
+
+            {/* What this website can do (Cards Section) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
+              <Card
+                icon={<FaTasks />}
+                title="Organize Tasks"
+                description="Easily create, update, and manage tasks across categories."
+              />
+              <Card
+                icon={<FaChartLine />}
+                title="Track Progress"
+                description="Visualize task status with drag-and-drop and progress tracking."
+              />
+              <Card
+                icon={<FaCheckCircle />}
+                title="Boost Productivity"
+                description="Stay focused and achieve goals with a structured workflow."
+              />
+            </div>
+          </div>
         ) : (
           <DragDropContext onDragEnd={handleDragEnd}>
             <div className="flex flex-col md:flex-row gap-6">
