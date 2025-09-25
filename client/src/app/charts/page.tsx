@@ -13,13 +13,13 @@ import {
   YAxis,
   ResponsiveContainer,
   TooltipProps,
+  PieLabelRenderProps,
 } from "recharts";
-import axios from "axios";
+import axiosInstance from "@/utils/axiosConfg";
 import { useAuth } from "../context/AuthContext";
-import { Task } from "../type";
-import { ValueType, NameType } from "recharts/types/component/DefaultTooltipContent";
+import { Task, ChartPayload } from "../type";
 
-// Map statuses directly to labels and colors
+// Map statuses to labels and colors
 const STATUS_MAP: Record<Task["status"], { label: string; color: string }> = {
   pending: { label: "Pending", color: "#3b82f6" },
   inprogress: { label: "In Progress", color: "#60a5fa" },
@@ -34,9 +34,7 @@ export default function Charts() {
   const fetchTasks = async () => {
     setLoading(true);
     try {
-      const res = await axios.get<Task[]>("http://localhost:8000/tasks", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const res = await axiosInstance.get<Task[]>("/tasks");
       setTasks(Array.isArray(res.data) ? res.data : []);
     } catch (err: any) {
       console.error("Failed to fetch tasks:", err.response?.data || err.message);
@@ -67,61 +65,73 @@ export default function Charts() {
     }));
   }, [tasks]);
 
-  if (loading) return <p className="text-center mt-10 text-white">Loading charts...</p>;
+  if (loading)
+    return (
+      <p className="text-center mt-20 text-white text-lg">Loading charts...</p>
+    );
+
   if (!user)
     return (
-      <p className="text-red-400 text-lg font-semibold text-center mt-10">
+      <p className="text-red-400 text-lg font-semibold text-center mt-20">
         Please login to see charts
       </p>
     );
-
-  /* ---------------- Custom Label for PieChart ---------------- */
-  const renderPieLabel = (entry: any) => (
-    <text
-      x={entry.cx}
-      y={entry.cy}
-      fill="#ffffff"
-      textAnchor="middle"
-      dominantBaseline="middle"
-      fontSize={14}
-      fontWeight={600}
-    >
-      {entry.name} ({entry.value})
-    </text>
-  );
 
   /* ---------------- Custom Tooltip ---------------- */
   const CustomTooltip = ({
     active,
     payload,
-  }: TooltipProps<ValueType, NameType>) => {
+  }: TooltipProps<number, string> & { payload?: any[] }) => {
     if (active && payload && payload.length) {
+      const data = payload[0].payload as ChartPayload;
       return (
-        <div className="bg-gray-800 p-2 rounded text-white border-none">
-          <p className="font-semibold">{payload[0].name}</p>
-          <p>{payload[0].value}</p>
+        <div className="bg-gray-900 p-3 rounded-lg shadow-lg text-white border-none">
+          <p className="font-semibold text-sm">{data.name}</p>
+          <p className="text-sm">{data.value}</p>
         </div>
       );
     }
     return null;
   };
 
+  /* ---------------- Donut Center Label ---------------- */
+  const renderCenterLabel = (props: PieLabelRenderProps) => {
+    const { cx, cy } = props;
+    if (cx == null || cy == null) return null;
+
+    const total = chartData.reduce((sum, entry) => sum + entry.value, 0);
+
+    return (
+      <text
+        x={Number(cx)}
+        y={Number(cy)}
+        fill="#ffffff"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize={16}
+        fontWeight={700}
+      >
+        {`Total: ${total}`}
+      </text>
+    );
+  };
+
   return (
-    <section className="w-full">
+    <section className="w-full px-4 lg:px-12 py-8">
       {/* Heading */}
-      <div className="text-center my-6">
-        <h2 className="text-2xl lg:text-3xl font-bold text-white">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl lg:text-4xl font-bold text-white">
           Task Status Overview
         </h2>
-        <p className="text-gray-400 mt-1">
+        <p className="text-gray-400 mt-2 text-base lg:text-lg">
           Visual insights of your pending, in-progress, and completed tasks
         </p>
       </div>
 
       {/* Charts Container */}
-      <div className="flex flex-col lg:flex-row w-full h-[70vh] min-h-[400px] gap-6">
+      <div className="flex flex-col lg:flex-row gap-6 w-full h-[70vh] min-h-[450px]">
         {/* Donut Chart */}
-        <div className="flex-1 p-4 rounded-2xl shadow-md" style={{ background: "#151d27" }}>
+        <div className="flex-1 bg-[#151d27] rounded-3xl p-6 shadow-xl flex items-center justify-center">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -132,29 +142,48 @@ export default function Charts() {
                 cy="50%"
                 innerRadius="40%"
                 outerRadius="70%"
-                label={renderPieLabel}
+                labelLine={false}
+                label={renderCenterLabel} // ✅ safe typed label
               >
                 {chartData.map((entry) => (
-                  <Cell key={entry.status} fill={STATUS_MAP[entry.status].color} />
+                  <Cell
+                    key={entry.status}
+                    fill={STATUS_MAP[entry.status].color}
+                  />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
-              <Legend wrapperStyle={{ color: "#ffffff" }} />
+              <Legend
+                wrapperStyle={{ color: "#ffffff" }}
+                iconSize={12}
+                layout="horizontal"
+                verticalAlign="bottom"
+                align="center"
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
         {/* Bar Chart */}
-        <div className="flex-1 p-4 rounded-2xl shadow-md" style={{ background: "#151d27" }}>
+        <div className="flex-1 bg-[#151d27] rounded-3xl p-6 shadow-xl flex items-center justify-center">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} barCategoryGap="40%">
-              <XAxis dataKey="name" stroke="#ffffff" />
-              <YAxis stroke="#ffffff" />
+            <BarChart data={chartData} barCategoryGap="30%">
+              <XAxis dataKey="name" stroke="#ffffff" tick={{ fontSize: 14 }} />
+              <YAxis stroke="#ffffff" tick={{ fontSize: 14 }} />
               <Tooltip content={<CustomTooltip />} />
-              <Legend wrapperStyle={{ color: "#ffffff" }} />
-              <Bar dataKey="value" barSize={45}>
+              <Legend
+                wrapperStyle={{ color: "#ffffff" }}
+                iconSize={12}
+                layout="horizontal"
+                verticalAlign="top"
+                align="center"
+              />
+              <Bar dataKey="value" barSize={50} radius={[5, 5, 0, 0]}>
                 {chartData.map((entry) => (
-                  <Cell key={entry.status} fill={STATUS_MAP[entry.status].color} />
+                  <Cell
+                    key={entry.status}
+                    fill={STATUS_MAP[entry.status].color}
+                  />
                 ))}
               </Bar>
             </BarChart>

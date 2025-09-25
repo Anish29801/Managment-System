@@ -43,3 +43,9 @@ export interface SubtaskDTO {
   updatedAt?: Date;
   completed?: boolean; // optional boolean for frontend convenience
 }
+
+export interface ChartPayload {
+  name: string;
+  value: number;
+  status: Task["status"];
+}
