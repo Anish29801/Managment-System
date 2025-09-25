@@ -1,11 +1,11 @@
 import { Router, Request, Response } from "express";
 import { Task } from "../model/Task";
-import { authMiddleware } from "../middleware/taskAuth";
+import { verifyToken } from "../middleware/auth";
 
 const router = Router();
 
 /* ------------------- Create Task ------------------- */
-router.post("/", authMiddleware, async (req: Request, res: Response) => {
+router.post("/", verifyToken, async (req: Request, res: Response) => {
   try {
     const { title, description, status, dueDate, subtasks } = req.body;
 
@@ -17,7 +17,7 @@ router.post("/", authMiddleware, async (req: Request, res: Response) => {
       status: status || "pending",
       dueDate,
       subtasks: subtasks || [],
-      createdBy: (req as any).userId, // tie task to logged-in user
+      createdBy: req.userId, // ✅ link task to current user
     });
 
     const savedTask = await newTask.save();
@@ -28,24 +28,28 @@ router.post("/", authMiddleware, async (req: Request, res: Response) => {
   }
 });
 
-/* ------------------- Get All Tasks ------------------- */
-/* ------------------- Get All Tasks with Search ------------------- */
-router.get("/", authMiddleware, async (req, res) => {
+/* ------------------- Get Current User's Tasks ------------------- */
+router.get("/", verifyToken, async (req: Request, res: Response) => {
   try {
     const { search } = req.query;
-    const userId = (req as any).userId;
+    const userId = req.userId;
 
-    // Base query (only tasks by logged-in user)
     let query: any = { createdBy: userId };
 
     if (search && typeof search === "string") {
-      const regex = new RegExp(search, "i"); // case-insensitive regex
-
-      query.$or = [
-        { title: regex },
-        { description: regex },
-        { "subtasks.title": regex }, // also search in subtask titles
-      ];
+      const regex = new RegExp(search, "i");
+      query = {
+        $and: [
+          { createdBy: userId },
+          {
+            $or: [
+              { title: regex },
+              { description: regex },
+              { "subtasks.title": regex },
+            ],
+          },
+        ],
+      };
     }
 
     const tasks = await Task.find(query).populate({
@@ -61,12 +65,12 @@ router.get("/", authMiddleware, async (req, res) => {
 });
 
 /* ------------------- Get Single Task ------------------- */
-router.get("/:id", authMiddleware, async (req, res) => {
+router.get("/:id", verifyToken, async (req: Request, res: Response) => {
   try {
-    const task = await Task.findOne({ _id: req.params.id, createdBy: (req as any).userId }).populate(
-      "createdBy",
-      "name email"
-    );
+    const task = await Task.findOne({
+      _id: req.params.id,
+      createdBy: req.userId,
+    }).populate("createdBy", "name email");
 
     if (!task) return res.status(404).json({ message: "Task not found" });
 
@@ -78,15 +82,16 @@ router.get("/:id", authMiddleware, async (req, res) => {
 });
 
 /* ------------------- Update Task ------------------- */
-router.put("/:id", authMiddleware, async (req, res) => {
+router.put("/:id", verifyToken, async (req: Request, res: Response) => {
   try {
     const updatedTask = await Task.findOneAndUpdate(
-      { _id: req.params.id, createdBy: (req as any).userId },
+      { _id: req.params.id, createdBy: req.userId },
       req.body,
       { new: true, runValidators: true }
     );
 
-    if (!updatedTask) return res.status(404).json({ message: "Task not found" });
+    if (!updatedTask)
+      return res.status(404).json({ message: "Task not found" });
 
     res.status(200).json({ message: "Task updated successfully", task: updatedTask });
   } catch (error) {
@@ -96,15 +101,16 @@ router.put("/:id", authMiddleware, async (req, res) => {
 });
 
 /* ------------------- Partially Update Task ------------------- */
-router.patch("/:id", authMiddleware, async (req, res) => {
+router.patch("/:id", verifyToken, async (req: Request, res: Response) => {
   try {
     const updatedTask = await Task.findOneAndUpdate(
-      { _id: req.params.id, createdBy: (req as any).userId },
+      { _id: req.params.id, createdBy: req.userId },
       req.body,
       { new: true, runValidators: true }
     );
 
-    if (!updatedTask) return res.status(404).json({ message: "Task not found" });
+    if (!updatedTask)
+      return res.status(404).json({ message: "Task not found" });
 
     res.status(200).json({ message: "Task partially updated", task: updatedTask });
   } catch (error) {
@@ -114,13 +120,20 @@ router.patch("/:id", authMiddleware, async (req, res) => {
 });
 
 /* ------------------- Delete Task ------------------- */
-router.delete("/:id", authMiddleware, async (req, res) => {
+router.delete("/:id", verifyToken, async (req: Request, res: Response) => {
   try {
-    const deletedTask = await Task.findOneAndDelete({ _id: req.params.id, createdBy: (req as any).userId });
+    const deletedTask = await Task.findOneAndDelete({
+      _id: req.params.id,
+      createdBy: req.userId,
+    });
 
-    if (!deletedTask) return res.status(404).json({ message: "Task not found" });
+    if (!deletedTask)
+      return res.status(404).json({ message: "Task not found" });
 
-    res.status(200).json({ message: `Task "${deletedTask.title}" deleted successfully`, task: deletedTask });
+    res.status(200).json({
+      message: `Task "${deletedTask.title}" deleted successfully`,
+      task: deletedTask,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to delete task", error });
@@ -130,10 +143,10 @@ router.delete("/:id", authMiddleware, async (req, res) => {
 /* ------------------- Subtask Routes ------------------- */
 
 // Add subtask
-router.post("/:id/subtasks", authMiddleware, async (req, res) => {
+router.post("/:id/subtasks", verifyToken, async (req: Request, res: Response) => {
   try {
     const { title, status } = req.body;
-    const task = await Task.findOne({ _id: req.params.id, createdBy: (req as any).userId });
+    const task = await Task.findOne({ _id: req.params.id, createdBy: req.userId });
     if (!task) return res.status(404).json({ message: "Task not found" });
 
     task.subtasks.push({ title, status: status || "pending" });
@@ -147,9 +160,9 @@ router.post("/:id/subtasks", authMiddleware, async (req, res) => {
 });
 
 // Update subtask
-router.patch("/:id/subtasks/:subtaskId", authMiddleware, async (req, res) => {
+router.patch("/:id/subtasks/:subtaskId", verifyToken, async (req: Request, res: Response) => {
   try {
-    const task = await Task.findOne({ _id: req.params.id, createdBy: (req as any).userId });
+    const task = await Task.findOne({ _id: req.params.id, createdBy: req.userId });
     if (!task) return res.status(404).json({ message: "Task not found" });
 
     const subtask = task.subtasks.id(req.params.subtaskId);
@@ -166,9 +179,9 @@ router.patch("/:id/subtasks/:subtaskId", authMiddleware, async (req, res) => {
 });
 
 // Delete subtask
-router.delete("/:id/subtasks/:subtaskId", authMiddleware, async (req, res) => {
+router.delete("/:id/subtasks/:subtaskId", verifyToken, async (req: Request, res: Response) => {
   try {
-    const task = await Task.findOne({ _id: req.params.id, createdBy: (req as any).userId });
+    const task = await Task.findOne({ _id: req.params.id, createdBy: req.userId });
     if (!task) return res.status(404).json({ message: "Task not found" });
 
     const subtask = task.subtasks.id(req.params.subtaskId);

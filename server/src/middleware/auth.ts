@@ -1,9 +1,8 @@
-// server/middleware/auth.ts
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
 interface JwtPayload {
-  id: string;
+  id: string; // 👈 we’ll always store `id` in the token
 }
 
 // Extend Request to include userId
@@ -28,7 +27,8 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
-    req.userId = decoded.id; // attach userId to request
+    req.userId = decoded.id; // ✅ always attach userId
+    console.log("Decoded userId:", req.userId);
     next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid or expired token" });
