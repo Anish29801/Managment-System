@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { AuthProvider } from "./context/AuthContext"; 
 
 const poppins = Poppins({
   weight: "400",
@@ -21,10 +22,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable} antialiased flex flex-col min-h-screen`}>
-        <Navbar />
-        <main className="flex-grow">{children}</main>
-        <Footer />
+      <body
+        className={`${poppins.variable} antialiased flex flex-col min-h-screen`}
+      >
+        {/* ✅ Provide global auth context */}
+        <AuthProvider>
+          <Navbar />
+          <main className="flex-grow">{children}</main>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );
