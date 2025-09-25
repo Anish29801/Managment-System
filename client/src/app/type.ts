@@ -49,3 +49,8 @@ export interface ChartPayload {
   value: number;
   status: Task["status"];
 }
+export interface TaskItemProps {
+  task: Task;
+  onUpdate: (task: Task) => void;
+  onDelete: (id: string) => void;
+}

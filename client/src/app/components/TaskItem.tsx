@@ -1,11 +1,7 @@
 "use client";
 
-import { Task } from "../type";
+import {TaskItemProps } from "../type";
 
-interface TaskItemProps {
-  task: Task;
-  onUpdate: (task: Task) => void;
-}
 
 export const TaskItem: React.FC<TaskItemProps> = ({ task, onUpdate }) => {
   return (
