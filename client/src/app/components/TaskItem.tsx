@@ -4,7 +4,7 @@ import { Task } from "../type";
 
 interface TaskItemProps {
   task: Task;
-  onUpdate: (task: Task) => void; // Trigger opening the TaskForm
+  onUpdate: (task: Task) => void;
 }
 
 export const TaskItem: React.FC<TaskItemProps> = ({ task, onUpdate }) => {
