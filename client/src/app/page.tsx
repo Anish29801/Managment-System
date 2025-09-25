@@ -12,7 +12,6 @@ import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 export default function Dashboard() {
   const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,7 +19,6 @@ export default function Dashboard() {
   /* ---------------- Fetch Tasks from backend ---------------- */
   const fetchTasks = async (search?: string) => {
     if (!user) return;
-    setLoading(true);
     try {
       const res = await axios.get<Task[]>("http://localhost:8000/tasks", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -30,8 +28,6 @@ export default function Dashboard() {
     } catch (err: any) {
       console.error("Failed to fetch tasks:", err.response?.data || err.message);
       setTasks([]);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -57,7 +53,7 @@ export default function Dashboard() {
       await axios.delete(`http://localhost:8000/tasks/${taskId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      fetchTasks(searchQuery.trim()); // refresh with current search
+      fetchTasks(searchQuery.trim());
     } catch (err: any) {
       console.error("Failed to delete task:", err.response?.data || err.message);
     }
@@ -80,21 +76,18 @@ export default function Dashboard() {
       await axios.put(
         `http://localhost:8000/tasks/${draggableId}`,
         { status: newStatus },
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
-      fetchTasks(searchQuery.trim()); // refresh with current search
+      fetchTasks(searchQuery.trim());
     } catch (err: any) {
       console.error("Failed to update task status:", err.response?.data || err.message);
     }
   };
 
-  /* ---------------- Local search filtering for instant UI ---------------- */
+  /* ---------------- Local search filtering ---------------- */
   const displayedTasks = tasks.filter((t) =>
     t.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
   const pendingTasks = displayedTasks.filter((t) => t.status === "pending");
   const inProgressTasks = displayedTasks.filter((t) => t.status === "inprogress");
   const completedTasks = displayedTasks.filter((t) => t.status === "completed");
@@ -156,9 +149,7 @@ export default function Dashboard() {
           <span className="text-blue-400 font-semibold">TaskMaster</span>.
         </p>
 
-        {loading ? (
-          <p className="text-center mt-10">Loading...</p>
-        ) : !user ? (
+        {!user ? (
           <p className="text-red-400 text-lg font-semibold text-center mt-10">
             Please Login
           </p>
@@ -206,7 +197,7 @@ export default function Dashboard() {
                 user={user}
                 task={editingTask}
                 onClose={() => setShowForm(false)}
-                onTaskAdded={() => fetchTasks(searchQuery.trim())} // refresh backend
+                onTaskAdded={() => fetchTasks(searchQuery.trim())}
               />
             </div>
           </div>
