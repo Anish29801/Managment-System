@@ -10,7 +10,8 @@ import { TaskSection } from "./components/TaskSection";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import HeroSection from "./components/HeroSection";
 import Card from "./components/Card";
-import Clock from "./components/Clock"; // Import your Clock component
+import Clock from "./components/Clock";
+import Toast from "./components/Toast"; // ✅ import Toast
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -18,6 +19,7 @@ export default function Dashboard() {
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [toastMessage, setToastMessage] = useState<string | null>(null); // ✅ Toast state
 
   /* ---------------- Fetch Tasks ---------------- */
   const fetchTasks = async (search?: string) => {
@@ -42,6 +44,7 @@ export default function Dashboard() {
   const handleAddClick = () => {
     setEditingTask(null);
     setShowForm(true);
+    setToastMessage("Opening task form..."); // ✅ Toast for Add button
   };
 
   const handleUpdate = (task: Task) => {
@@ -56,8 +59,10 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       fetchTasks(searchQuery.trim());
+      setToastMessage("Task deleted successfully ✅"); // ✅ Toast for delete
     } catch (err: any) {
       console.error("Failed to delete task:", err.response?.data || err.message);
+      setToastMessage("❌ Failed to delete task");
     }
   };
 
@@ -80,8 +85,10 @@ export default function Dashboard() {
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
       fetchTasks(searchQuery.trim());
+      setToastMessage(`Task moved to ${newStatus} ✅`); // ✅ Toast for drag-drop
     } catch (err: any) {
       console.error("Failed to update task status:", err.response?.data || err.message);
+      setToastMessage("❌ Failed to update task status");
     }
   };
 
@@ -103,9 +110,11 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen p-6 flex flex-col relative text-white
-                    bg-gradient-to-br from-gray-900 via-gray-800 to-black
-                    overflow-hidden">
+    <div
+      className="min-h-screen p-6 flex flex-col relative text-white
+                 bg-gradient-to-br from-gray-900 via-gray-800 to-black
+                 overflow-hidden"
+    >
       <div className="absolute inset-0 bg-white/5 backdrop-blur-sm pointer-events-none z-0"></div>
 
       <div className="relative z-10 w-full">
@@ -115,7 +124,9 @@ export default function Dashboard() {
         {/* Greeting + Clock */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-4 mt-6 gap-4">
           <div className="flex flex-col md:flex-row items-center gap-3">
-            <h1 className="text-3xl font-bold text-white tracking-wide">{greeting}</h1>
+            <h1 className="text-3xl font-bold text-white tracking-wide">
+              {greeting}
+            </h1>
             <Clock />
           </div>
 
@@ -136,7 +147,9 @@ export default function Dashboard() {
               onClick={handleAddClick}
               disabled={!user}
               className={`px-6 py-2 rounded-md ${
-                user ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-600 cursor-not-allowed"
+                user
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-gray-600 cursor-not-allowed"
               }`}
             >
               Add Task
@@ -219,10 +232,23 @@ export default function Dashboard() {
                 user={user}
                 task={editingTask}
                 onClose={() => setShowForm(false)}
-                onTaskAdded={() => fetchTasks(searchQuery.trim())}
+                onTaskAdded={() => {
+                  fetchTasks(searchQuery.trim());
+                  setToastMessage("✅ Task added successfully");
+                }}
               />
             </div>
           </div>
+        )}
+
+        {/* ✅ Toast Notification */}
+        {toastMessage && (
+          <Toast
+            message={toastMessage}
+            color="green"
+            duration={2000}
+            onClose={() => setToastMessage(null)}
+          />
         )}
       </div>
     </div>
