@@ -1,40 +1,32 @@
-// client/src/utils/axiosConfig.ts
-"use client";
-
 import axios from "axios";
 
-// Create an axios instance
 const axiosInstance = axios.create({
   baseURL: "http://localhost:8000",
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
-// Attach token to every request if it exists
+// ✅ Attach token if available
 axiosInstance.interceptors.request.use(
   (config) => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("token");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Handle common errors globally
+// ✅ Handle 401 responses
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // 🔹 Example: auto-logout if token expired
+    if (
+      error.response?.status === 401 &&
+      typeof window !== "undefined" &&
+      !window.location.pathname.includes("/login") // ⬅️ skip redirect if already on /login
+    ) {
       localStorage.removeItem("token");
-      if (typeof window !== "undefined") {
-        window.location.href = "/login";
-      }
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }

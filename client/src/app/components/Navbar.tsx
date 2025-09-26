@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Disclosure } from "@headlessui/react";
 import Image from "next/image";
 import { HiBars3, HiXMark } from "react-icons/hi2";
@@ -13,6 +13,7 @@ function classNames(...classes: string[]) {
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, logout } = useAuth();
 
   // ✅ Only show Charts if logged in
@@ -22,6 +23,11 @@ export default function Navbar() {
         { name: "Charts", href: "/charts" },
       ]
     : [{ name: "Dashboard", href: "/" }];
+
+  const handleLogout = () => {
+    logout();
+    router.push("/"); // ✅ force redirect to home
+  };
 
   return (
     <Disclosure as="nav" className="bg-[#1e2939] relative shadow-lg">
@@ -84,7 +90,7 @@ export default function Navbar() {
 
                     {/* Logout */}
                     <button
-                      onClick={logout}
+                      onClick={handleLogout}
                       className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white transition"
                     >
                       Logout
@@ -153,7 +159,7 @@ export default function Navbar() {
                   </div>
 
                   <button
-                    onClick={logout}
+                    onClick={handleLogout}
                     className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white transition"
                   >
                     Logout

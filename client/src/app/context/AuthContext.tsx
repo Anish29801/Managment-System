@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { User, AuthContextType } from "../type";
+import axiosInstance from "@/utils/axiosConfg";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -20,25 +21,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
-      if (!token) return;
+      if (!token) return; // ⬅️ skip request if no token
 
       try {
-        const res = await fetch("http://localhost:8000/users/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axiosInstance.get("/users/me");
+        const data = res.data;
 
-        if (res.ok) {
-          const data = await res.json();
+        // 🎨 assign color based on first letter
+        const name = data.user?.name || "G";
+        const color =
+          avatarColors[name.charCodeAt(0) % avatarColors.length] || "bg-gray-600";
 
-          // 🎨 assign color based on first letter
-          const name = data.user.name || "G";
-          const color =
-            avatarColors[name.charCodeAt(0) % avatarColors.length] || "bg-gray-600";
-
-          setUser({ ...data.user, color });
-        } else setUser(null);
-      } catch {
+        setUser({ ...data.user, color });
+      } catch (err) {
         setUser(null);
+        localStorage.removeItem("token");
       }
     };
 
