@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { Task } from "../model/Task";
 import { verifyToken } from "../middleware/auth";
+import { ParsedQs } from "qs"
 
 const router = Router();
 
@@ -31,25 +32,41 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
 /* ------------------- Get Current User's Tasks ------------------- */
 router.get("/", verifyToken, async (req: Request, res: Response) => {
   try {
-    const { search } = req.query;
+    const { search, startDate, endDate } = req.query;
     const userId = req.userId;
 
     let query: any = { createdBy: userId };
 
+    // Search filter
     if (search && typeof search === "string") {
       const regex = new RegExp(search, "i");
-      query = {
-        $and: [
-          { createdBy: userId },
-          {
-            $or: [
-              { title: regex },
-              { description: regex },
-              { "subtasks.title": regex },
-            ],
-          },
-        ],
-      };
+      query.$and = [
+        { createdBy: userId },
+        {
+          $or: [
+            { title: regex },
+            { description: regex },
+            { "subtasks.title": regex },
+          ],
+        },
+      ];
+    }
+
+    // Date filter
+    const start = startDate && typeof startDate === "string" ? new Date(startDate) : null;
+    const end = endDate && typeof endDate === "string" ? new Date(endDate) : null;
+
+    if (start || end) {
+      const dateFilter: any = {};
+      if (start) dateFilter.$gte = start;
+      if (end) dateFilter.$lte = end;
+
+      if (query.$and) {
+        query.$and.push({ dueDate: dateFilter });
+      } else {
+        query.$and = [{ createdBy: userId }, { dueDate: dateFilter }];
+        delete query.createdBy;
+      }
     }
 
     const tasks = await Task.find(query).populate({
@@ -63,7 +80,6 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to fetch tasks", error });
   }
 });
-
 /* ------------------- Get Single Task ------------------- */
 router.get("/:id", verifyToken, async (req: Request, res: Response) => {
   try {

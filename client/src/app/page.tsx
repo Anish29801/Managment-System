@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FaSearch, FaTasks, FaChartLine, FaCheckCircle } from "react-icons/fa";
+import { FaSearch, FaTasks, FaChartLine, FaCheckCircle, FaPlus } from "react-icons/fa";
 import { useAuth } from "./context/AuthContext";
 import TaskForm from "./components/TaskForm";
 import { Task } from "./type";
@@ -12,6 +12,7 @@ import HeroSection from "./components/HeroSection";
 import Card from "./components/Card";
 import Clock from "./components/Clock";
 import Toast from "./components/Toast";
+import axiosInstance from "@/utils/axiosConfg";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -23,23 +24,30 @@ export default function Dashboard() {
   const [endDate, setEndDate] = useState("");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  /* ---------------- Fetch Tasks ---------------- */
+  /* ---------------- Fetch Tasks from Backend ---------------- */
   const fetchTasks = async () => {
     if (!user) return;
     try {
       const res = await axios.get<Task[]>("http://localhost:8000/tasks", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        params: {
+          search: searchQuery || undefined,
+          startDate: startDate || undefined,
+          endDate: endDate || undefined,
+        },
       });
       setTasks(Array.isArray(res.data) ? res.data : []);
     } catch (err: any) {
       console.error("Failed to fetch tasks:", err.response?.data || err.message);
       setTasks([]);
+      setToastMessage("❌ Failed to fetch tasks");
     }
   };
 
+  /* ---------------- Trigger fetch when filters change ---------------- */
   useEffect(() => {
     fetchTasks();
-  }, [user]);
+  }, [user, searchQuery, startDate, endDate]);
 
   /* ---------------- Handlers ---------------- */
   const handleAddClick = () => {
@@ -60,7 +68,7 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       fetchTasks();
-      setToastMessage("Task deleted successfully ✅");
+      setToastMessage("✅ Task deleted successfully");
     } catch (err: any) {
       console.error("Failed to delete task:", err.response?.data || err.message);
       setToastMessage("❌ Failed to delete task");
@@ -86,35 +94,17 @@ export default function Dashboard() {
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
       fetchTasks();
-      setToastMessage(`Task moved to ${newStatus} ✅`);
+      setToastMessage(`✅ Task moved to ${newStatus}`);
     } catch (err: any) {
       console.error("Failed to update task status:", err.response?.data || err.message);
       setToastMessage("❌ Failed to update task status");
     }
   };
 
-  /* ---------------- Filter tasks ---------------- */
-  const filteredTasks = tasks
-    .filter((t) =>
-      t.title.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .filter((t) => {
-      const start = startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null;
-      const end = endDate ? new Date(endDate).setHours(0, 0, 0, 0) : null;
-
-      if (!t.dueDate) return true;
-
-      const taskDate = new Date(t.dueDate).setHours(0, 0, 0, 0);
-
-      if (start && end) return taskDate >= start && taskDate <= end;
-      if (start) return taskDate >= start;
-      if (end) return taskDate <= end;
-      return true; // show all if no date selected
-    });
-
-  const pendingTasks = filteredTasks.filter((t) => t.status === "pending");
-  const inProgressTasks = filteredTasks.filter((t) => t.status === "inprogress");
-  const completedTasks = filteredTasks.filter((t) => t.status === "completed");
+  /* ---------------- Task Filtering (already filtered by backend) ---------------- */
+  const pendingTasks = tasks.filter((t) => t.status === "pending");
+  const inProgressTasks = tasks.filter((t) => t.status === "inprogress");
+  const completedTasks = tasks.filter((t) => t.status === "completed");
 
   /* ---------------- Greeting ---------------- */
   const greeting = user ? `Hi, ${user.name} Good ${getTimeOfDay()}` : "Hi, Guest";
@@ -130,10 +120,10 @@ export default function Dashboard() {
       <div className="absolute inset-0 bg-white/5 backdrop-blur-sm pointer-events-none z-0"></div>
 
       <div className="relative z-10 w-full">
-        {/* Hero Section only for guests */}
+        {/* Hero Section for Guests */}
         {!user && <HeroSection />}
 
-        {/* Greeting + Clock + Add/Search only for logged in */}
+        {/* Greeting + Clock + Add/Search for Logged In Users */}
         {user && (
           <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <div className="flex flex-col md:flex-row items-center gap-4">
@@ -161,7 +151,7 @@ export default function Dashboard() {
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                   className="px-3 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  max={endDate || undefined} // prevent start > end
+                  max={endDate || undefined}
                 />
                 <span className="text-gray-300">to</span>
                 <input
@@ -169,7 +159,7 @@ export default function Dashboard() {
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
                   className="px-3 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  min={startDate || undefined} // prevent end < start
+                  min={startDate || undefined}
                 />
               </div>
 
@@ -184,7 +174,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Cards for guests only */}
+        {/* Cards for Guests */}
         {!user && (
           <div className="mt-10 flex flex-col items-center gap-8">
             <div className="bg-red-900/50 border border-red-500 rounded-2xl px-6 py-5 text-center shadow-xl">
@@ -201,7 +191,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Tasks Sections for logged in users */}
+        {/* Tasks Sections for Logged In Users */}
         {user && (
           <DragDropContext onDragEnd={handleDragEnd}>
             <div className="flex flex-col md:flex-row gap-6 mt-6">
