@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { FaSearch, FaTasks, FaChartLine, FaCheckCircle, FaPlus } from "react-icons/fa";
+import { FaSearch, FaTasks, FaChartLine, FaCheckCircle } from "react-icons/fa";
 import { useAuth } from "./context/AuthContext";
 import TaskForm from "./components/TaskForm";
 import { Task } from "./type";
@@ -28,8 +27,7 @@ export default function Dashboard() {
   const fetchTasks = async () => {
     if (!user) return;
     try {
-      const res = await axios.get<Task[]>("http://localhost:8000/tasks", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      const res = await axiosInstance.get<Task[]>("/tasks", {
         params: {
           search: searchQuery || undefined,
           startDate: startDate || undefined,
@@ -64,9 +62,7 @@ export default function Dashboard() {
   const handleDelete = async (taskId: string) => {
     if (!user) return;
     try {
-      await axios.delete(`http://localhost:8000/tasks/${taskId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      await axiosInstance.delete(`/tasks/${taskId}`);
       fetchTasks();
       setToastMessage("✅ Task deleted successfully");
     } catch (err: any) {
@@ -88,11 +84,7 @@ export default function Dashboard() {
         : "completed";
 
     try {
-      await axios.put(
-        `http://localhost:8000/tasks/${draggableId}`,
-        { status: newStatus },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-      );
+      await axiosInstance.put(`/tasks/${draggableId}`, { status: newStatus });
       fetchTasks();
       setToastMessage(`✅ Task moved to ${newStatus}`);
     } catch (err: any) {
