@@ -11,7 +11,7 @@ import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import HeroSection from "./components/HeroSection";
 import Card from "./components/Card";
 import Clock from "./components/Clock";
-import Toast from "./components/Toast"; // ✅ import Toast
+import Toast from "./components/Toast"; // ✅ Toast import
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -44,7 +44,7 @@ export default function Dashboard() {
   const handleAddClick = () => {
     setEditingTask(null);
     setShowForm(true);
-    setToastMessage("Opening task form..."); // ✅ Toast for Add button
+    setToastMessage("Opening task form...");
   };
 
   const handleUpdate = (task: Task) => {
@@ -59,7 +59,7 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       fetchTasks(searchQuery.trim());
-      setToastMessage("Task deleted successfully ✅"); // ✅ Toast for delete
+      setToastMessage("Task deleted successfully ✅");
     } catch (err: any) {
       console.error("Failed to delete task:", err.response?.data || err.message);
       setToastMessage("❌ Failed to delete task");
@@ -85,7 +85,7 @@ export default function Dashboard() {
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
       fetchTasks(searchQuery.trim());
-      setToastMessage(`Task moved to ${newStatus} ✅`); // ✅ Toast for drag-drop
+      setToastMessage(`Task moved to ${newStatus} ✅`);
     } catch (err: any) {
       console.error("Failed to update task status:", err.response?.data || err.message);
       setToastMessage("❌ Failed to update task status");
@@ -118,46 +118,47 @@ export default function Dashboard() {
       <div className="absolute inset-0 bg-white/5 backdrop-blur-sm pointer-events-none z-0"></div>
 
       <div className="relative z-10 w-full">
-        {/* Hero Section */}
-        <HeroSection />
+        {/* Hero Section only for guests */}
+        {!user && <HeroSection />}
 
-        {/* Greeting + Clock */}
-        <div className="flex flex-col md:flex-row justify-between items-center mb-4 mt-6 gap-4">
-          <div className="flex flex-col md:flex-row items-center gap-3">
-            <h1 className="text-3xl font-bold text-white tracking-wide">
-              {greeting}
-            </h1>
-            <Clock />
-          </div>
-
-          {/* Search + Add Task centered */}
-          <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-            <div className="relative w-full md:w-64">
-              <input
-                type="text"
-                placeholder="Search tasks..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-md bg-gray-800/80 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
+        {/* Greeting + Clock + Add/Search only for logged in */}
+        {user && (
+          <div className="flex flex-col md:flex-row justify-between items-center mb-4 mt-6 gap-4">
+            <div className="flex flex-col md:flex-row items-center gap-3">
+              <h1 className="text-3xl font-bold text-white tracking-wide">
+                {greeting}
+              </h1>
+              <Clock />
             </div>
 
-            <button
-              onClick={handleAddClick}
-              disabled={!user}
-              className={`px-6 py-2 rounded-md ${
-                user
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-gray-600 cursor-not-allowed"
-              }`}
-            >
-              Add Task
-            </button>
-          </div>
-        </div>
+            <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+              <div className="relative w-full md:w-64">
+                <input
+                  type="text"
+                  placeholder="Search tasks..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 rounded-md bg-gray-800/80 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
+              </div>
 
-        {/* Cards for non-logged users */}
+              <button
+                onClick={handleAddClick}
+                disabled={!user}
+                className={`px-6 py-2 rounded-md ${
+                  user
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-gray-600 cursor-not-allowed"
+                }`}
+              >
+                Add Task
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Cards for guests only */}
         {!user && (
           <div className="mt-10 flex flex-col items-center gap-8">
             <div className="bg-red-900/50 border border-red-500 rounded-xl px-6 py-4 text-center shadow-lg">
