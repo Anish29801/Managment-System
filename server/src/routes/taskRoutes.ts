@@ -140,6 +140,33 @@ router.delete("/:id", verifyToken, async (req: Request, res: Response) => {
   }
 });
 
+/* ------------------- Get Tasks by Date Range ------------------- */
+router.get("/date-range", verifyToken, async (req: Request, res: Response) => {
+  try {
+    const { startDate, endDate } = req.query;
+    const userId = req.userId;
+
+    if (!startDate && !endDate)
+      return res.status(400).json({ message: "Please provide at least one date" });
+
+    const dateQuery: any = { createdBy: userId };
+
+    if (startDate && endDate) {
+      dateQuery.dueDate = { $gte: new Date(startDate as string), $lte: new Date(endDate as string) };
+    } else if (startDate) {
+      dateQuery.dueDate = { $gte: new Date(startDate as string) };
+    } else if (endDate) {
+      dateQuery.dueDate = { $lte: new Date(endDate as string) };
+    }
+
+    const tasks = await Task.find(dateQuery).populate({ path: "createdBy", select: "name email" });
+    res.status(200).json(tasks);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch tasks by date range", error });
+  }
+});
+
 /* ------------------- Subtask Routes ------------------- */
 
 // Add subtask
