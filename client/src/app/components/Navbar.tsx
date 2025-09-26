@@ -30,7 +30,7 @@ export default function Navbar() {
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
             <div className="relative flex h-16 items-center justify-between">
               {/* Left side */}
-              <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-3">
                 <Image
                   src={logo}
                   alt="Logo"
@@ -40,7 +40,14 @@ export default function Navbar() {
                   priority
                 />
 
-                <div className="hidden sm:flex sm:space-x-4">
+                {/* ✅ Show TaskMaster only when user is logged in */}
+                {user && (
+                  <span className="text-blue-500 font-semibold text-lg">
+                    TaskMaster
+                  </span>
+                )}
+
+                <div className="hidden sm:flex sm:space-x-4 ml-4">
                   {navigation.map((item) => {
                     const isActive = pathname === item.href;
                     return (
@@ -139,12 +146,19 @@ export default function Navbar() {
 
               {/* Auth buttons on mobile */}
               {user ? (
-                <button
-                  onClick={logout}
-                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white transition"
-                >
-                  Logout
-                </button>
+                <>
+                  {/* ✅ TaskMaster text also in mobile nav when logged in */}
+                  <div className="px-3 py-2 text-blue-500 font-semibold text-lg">
+                    TaskMaster
+                  </div>
+
+                  <button
+                    onClick={logout}
+                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white transition"
+                  >
+                    Logout
+                  </button>
+                </>
               ) : (
                 <>
                   <a
