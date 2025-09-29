@@ -48,7 +48,6 @@ export default function Dashboard() {
   const handleAddClick = () => {
     setEditingTask(null);
     setShowForm(true);
-    setToastMessage("Opening task form...");
   };
 
   const handleUpdate = (task: Task) => {
@@ -233,7 +232,6 @@ export default function Dashboard() {
                 onClose={() => setShowForm(false)}
                 onTaskAdded={() => {
                   fetchTasks();
-                  setToastMessage("✅ Task added successfully");
                 }}
               />
             </div>
