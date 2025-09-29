@@ -1,38 +1,57 @@
 "use client";
 
-import {TaskItemProps } from "../type";
-
+import { TaskItemProps } from "../type";
 
 export const TaskItem: React.FC<TaskItemProps> = ({ task, onUpdate }) => {
   return (
     <li
-      className="bg-[#101828] p-4 rounded-md shadow-lg cursor-pointer hover:bg-[#1f2937] flex flex-col gap-2"
       onClick={() => onUpdate(task)}
+      className="bg-[#101828] p-4 rounded-xl shadow-md cursor-pointer 
+                 hover:bg-[#1f2937] transition-colors duration-300 
+                 flex flex-col gap-3 border border-gray-800"
     >
-      <h2 className="text-lg font-semibold text-white">{task.title}</h2>
+      {/* Title */}
+      <h2 className="text-lg md:text-xl font-semibold text-white truncate">
+        {task.title}
+      </h2>
 
+      {/* Description */}
       {task.description && (
-        <p className="text-gray-400">{task.description}</p>
+        <p className="text-gray-400 text-sm md:text-base line-clamp-3">
+          {task.description}
+        </p>
       )}
 
-      <div className="text-sm text-gray-500 flex flex-wrap gap-2">
-        <span><strong>Status:</strong> {task.status}</span>
-        <span><strong>Priority:</strong> {task.priority}</span>
-        {task.dueDate && <span><strong>Due:</strong> {task.dueDate.split("T")[0]}</span>}
-        {task.subtasks && task.subtasks.length > 0 && (
-          <span className="flex flex-wrap gap-1">
-            <strong>Subtasks:</strong>{" "}
-            {task.subtasks.map((s) => (
-              <span
-                key={s.title}
-                className="bg-gray-600 text-white px-2 py-1 rounded-full text-xs"
-              >
-                {s.title}
-              </span>
-            ))}
+      {/* Meta info */}
+      <div className="text-xs md:text-sm text-gray-400 flex flex-wrap gap-3">
+        <span>
+          <strong className="text-gray-300">Status:</strong> {task.status}
+        </span>
+        <span>
+          <strong className="text-gray-300">Priority:</strong> {task.priority}
+        </span>
+        {task.dueDate && (
+          <span>
+            <strong className="text-gray-300">Due:</strong>{" "}
+            {task.dueDate.split("T")[0]}
           </span>
         )}
       </div>
+
+      {/* Subtasks */}
+      {task.subtasks && task.subtasks.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-2">
+          <strong className="text-gray-300 text-sm">Subtasks:</strong>
+          {task.subtasks.map((s) => (
+            <span
+              key={s.title}
+              className="bg-gray-700 text-white px-2 py-1 rounded-full text-xs shadow-sm"
+            >
+              {s.title}
+            </span>
+          ))}
+        </div>
+      )}
     </li>
   );
 };

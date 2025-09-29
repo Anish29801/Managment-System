@@ -1,3 +1,4 @@
+// Greeting.tsx
 import { User } from "../type";
 
 interface GreetingProps {
@@ -10,7 +11,7 @@ export const Greeting: React.FC<GreetingProps> = ({ user }) => {
     hour < 12 ? "Good Morning" : hour < 16 ? "Good Afternoon" : "Good Evening";
 
   return (
-    <div className="mb-4 text-white font-semibold text-lg">
+    <div className="mb-2 sm:mb-4 text-white font-semibold text-base sm:text-lg md:text-xl">
       Hi, {user ? user.name : "Guest"}! {user && timeOfDay}
     </div>
   );

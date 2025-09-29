@@ -19,7 +19,7 @@ import axiosInstance from "@/utils/axiosConfg";
 import { useAuth } from "../context/AuthContext";
 import { Task, ChartPayload } from "../type";
 
-// Map statuses to labels and colors
+// Status map with label & color
 const STATUS_MAP: Record<Task["status"], { label: string; color: string }> = {
   pending: { label: "Pending", color: "#3b82f6" },
   inprogress: { label: "In Progress", color: "#60a5fa" },
@@ -66,9 +66,7 @@ export default function Charts() {
   }, [tasks]);
 
   if (loading)
-    return (
-      <p className="text-center mt-20 text-white text-lg">Loading charts...</p>
-    );
+    return <p className="text-center mt-20 text-white text-lg">Loading charts...</p>;
 
   if (!user)
     return (
@@ -77,7 +75,7 @@ export default function Charts() {
       </p>
     );
 
-  /* ---------------- Custom Tooltip ---------------- */
+  // ---------------- Custom Tooltip ----------------
   const CustomTooltip = ({
     active,
     payload,
@@ -94,13 +92,11 @@ export default function Charts() {
     return null;
   };
 
-  /* ---------------- Donut Center Label ---------------- */
+  // ---------------- Donut Center Label ----------------
   const renderCenterLabel = (props: PieLabelRenderProps) => {
     const { cx, cy } = props;
     if (cx == null || cy == null) return null;
-
     const total = chartData.reduce((sum, entry) => sum + entry.value, 0);
-
     return (
       <text
         x={Number(cx)}
@@ -143,13 +139,10 @@ export default function Charts() {
                 innerRadius="40%"
                 outerRadius="70%"
                 labelLine={false}
-                label={renderCenterLabel} // ✅ safe typed label
+                label={renderCenterLabel}
               >
                 {chartData.map((entry) => (
-                  <Cell
-                    key={entry.status}
-                    fill={STATUS_MAP[entry.status].color}
-                  />
+                  <Cell key={entry.status} fill={STATUS_MAP[entry.status].color} />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
@@ -180,10 +173,7 @@ export default function Charts() {
               />
               <Bar dataKey="value" barSize={50} radius={[5, 5, 0, 0]}>
                 {chartData.map((entry) => (
-                  <Cell
-                    key={entry.status}
-                    fill={STATUS_MAP[entry.status].color}
-                  />
+                  <Cell key={entry.status} fill={STATUS_MAP[entry.status].color} />
                 ))}
               </Bar>
             </BarChart>

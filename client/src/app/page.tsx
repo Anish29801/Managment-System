@@ -80,8 +80,8 @@ export default function Dashboard() {
       destination.droppableId === "pending"
         ? "pending"
         : destination.droppableId === "inprogress"
-        ? "inprogress"
-        : "completed";
+          ? "inprogress"
+          : "completed";
 
     try {
       await axiosInstance.put(`/tasks/${draggableId}`, { status: newStatus });
@@ -158,10 +158,11 @@ export default function Dashboard() {
               {/* Add Task Button */}
               <button
                 onClick={handleAddClick}
-                className="px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 shadow-md transition-colors"
+                className="h-10 px-4 rounded-md bg-blue-600 hover:bg-blue-700 shadow-md transition-colors text-sm font-medium"
               >
                 Add Task
               </button>
+
             </div>
           </div>
         )}

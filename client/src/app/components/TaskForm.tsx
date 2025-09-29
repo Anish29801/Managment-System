@@ -4,8 +4,7 @@ import React, { useEffect, useMemo, useState, useRef } from "react";
 import axios from "axios";
 import { z, ZodError } from "zod";
 import { useAuth } from "../context/AuthContext";
-import { User } from "../type";
-import { Task as TaskType } from "../type";
+import { User, Task as TaskType } from "../type";
 
 /* ----------------------------- Zod Schemas ----------------------------- */
 const subtaskSchema = z.object({
@@ -21,14 +20,12 @@ const taskSchema = z.object({
   dueDate: z
     .string()
     .optional()
-    .refine(
-      (val) => !val || new Date(val) >= new Date(new Date().toDateString()),
-      { message: "Due date must be today or in the future" }
-    ),
+    .refine((val) => !val || new Date(val) >= new Date(new Date().toDateString()), {
+      message: "Due date must be today or in the future",
+    }),
   subtasks: z.array(subtaskSchema).optional(),
 });
 
-/* ------------------------------ Props Types ---------------------------- */
 interface TaskFormProps {
   user: User;
   onClose: () => void;
@@ -49,15 +46,15 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
   const { color } = useAuth();
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const [title, setTitle] = useState<string>(task?.title || "");
-  const [description, setDescription] = useState<string>(task?.description || "");
+  const [title, setTitle] = useState(task?.title || "");
+  const [description, setDescription] = useState(task?.description || "");
   const [status, setStatus] = useState<"pending" | "inprogress" | "completed">(
     (task?.status as any) || "pending"
   );
   const [priority, setPriority] = useState<"low" | "medium" | "high">(
     (task?.priority as any) || "medium"
   );
-  const [dueDate, setDueDate] = useState<string>(task?.dueDate ? task.dueDate.split("T")[0] : "");
+  const [dueDate, setDueDate] = useState(task?.dueDate ? task.dueDate.split("T")[0] : "");
   const [subtasks, setSubtasks] = useState<{ title: string; status: "pending" | "completed" }[]>(
     (Array.isArray((task as any)?.subtasks) ? (task as any).subtasks : []) || []
   );
@@ -148,201 +145,206 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const today = new Date().toISOString().split("T")[0];
+
   /* ------------------------------- Render -------------------------------- */
-  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD for min attribute
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="dialog" aria-modal="true">
-      <div ref={modalRef} className="w-full max-w-4xl bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl overflow-hidden">
-        <div className="flex">
-          {/* Left: Form */}
-          <div className="w-full md:w-3/5 p-6">
-            <h2 className={`text-xl font-semibold mb-4 bg-clip-text text-transparent ${color}`}>
-              {task ? "Update Task" : "Add Task"}
-            </h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+      <div
+        ref={modalRef}
+        className="w-full max-w-5xl bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl overflow-hidden flex flex-col md:flex-row"
+      >
+        {/* Left: Form */}
+        <div className="w-full md:w-3/5 p-6 overflow-y-auto">
+          <h2 className={`text-xl font-semibold mb-4 bg-clip-text text-transparent ${color}`}>
+            {task ? "Update Task" : "Add Task"}
+          </h2>
 
-            <form onSubmit={!task ? handleAdd : (e) => e.preventDefault()} className="space-y-4">
-              {/* Title */}
-              <div>
-                <label className="text-gray-300 block mb-1">Title</label>
-                <input
-                  className="w-full px-3 py-2 rounded bg-gray-700 text-white focus:outline-none"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                />
-              </div>
+          <form onSubmit={!task ? handleAdd : (e) => e.preventDefault()} className="space-y-4">
+            {/* Title */}
+            <div>
+              <label className="text-gray-300 block mb-1">Title</label>
+              <input
+                className="w-full px-3 py-2 rounded bg-gray-700 text-white focus:outline-none"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+            </div>
 
-              {/* Description */}
-              <div>
-                <label className="text-gray-300 block mb-1">Description</label>
-                <textarea
-                  className="w-full px-3 py-2 rounded bg-gray-700 text-white focus:outline-none"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={3}
-                />
-              </div>
+            {/* Description */}
+            <div>
+              <label className="text-gray-300 block mb-1">Description</label>
+              <textarea
+                className="w-full px-3 py-2 rounded bg-gray-700 text-white focus:outline-none"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={3}
+              />
+            </div>
 
-              {/* Status + Priority */}
-              <div className="flex gap-3">
-                <div className="flex-1">
-                  <label className="text-gray-300 block mb-1">Status</label>
-                  <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded bg-gray-700 text-white"
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="inprogress">In Progress</option>
-                    <option value="completed">Completed</option>
-                  </select>
-                </div>
-
-                <div className="flex-1">
-                  <label className="text-gray-300 block mb-1">Priority</label>
-                  <select
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded bg-gray-700 text-white"
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Due Date */}
-              <div>
-                <label className="text-gray-300 block mb-1">Due Date</label>
-                <input
-                  type="date"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
+            {/* Status + Priority */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1">
+                <label className="text-gray-300 block mb-1">Status</label>
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value as any)}
                   className="w-full px-3 py-2 rounded bg-gray-700 text-white"
-                  min={today}
-                />
-              </div>
-
-              {/* Subtasks */}
-              <div className="p-3 bg-gray-800 rounded">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-white font-semibold">Subtasks</h3>
-                  <button type="button" onClick={addSubtask} className={`px-3 py-1 rounded text-white ${color}`}>
-                    + Add Subtask
-                  </button>
-                </div>
-
-                {/* Scrollable area */}
-                <div
-                  className={`space-y-2 transition-all duration-300 ${
-                    subtasks.length > 2 ? "max-h-48 overflow-y-auto pr-1 custom-scrollbar" : ""
-                  }`}
                 >
-                  {subtasks.length === 0 && <p className="text-gray-400 text-sm">No subtasks yet.</p>}
-                  {subtasks.map((st, idx) => (
-                    <div key={idx} className="flex gap-2 items-center">
-                      <input
-                        className="flex-1 px-3 py-2 rounded bg-gray-700 text-white"
-                        placeholder="Subtask title"
-                        value={st.title}
-                        onChange={(e) => updateSubtask(idx, "title", e.target.value)}
-                      />
-                      <select
-                        value={st.status}
-                        onChange={(e) => updateSubtask(idx, "status", e.target.value)}
-                        className="px-2 py-2 rounded bg-gray-700 text-white"
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="completed">Completed</option>
-                      </select>
-                      <button
-                        type="button"
-                        onClick={() => removeSubtask(idx)}
-                        className="px-2 py-2 rounded bg-red-600 text-white"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                  <option value="pending">Pending</option>
+                  <option value="inprogress">In Progress</option>
+                  <option value="completed">Completed</option>
+                </select>
               </div>
 
-              {error && <p className="text-red-400 text-sm">{error}</p>}
+              <div className="flex-1">
+                <label className="text-gray-300 block mb-1">Priority</label>
+                <select
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value as any)}
+                  className="w-full px-3 py-2 rounded bg-gray-700 text-white"
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+            </div>
 
-              {/* Action buttons */}
-              <div className="flex gap-3 mt-2">
-                {!task && (
-                  <button
-                    type="submit"
-                    className={`flex-1 py-2 rounded text-white ${color} disabled:opacity-60`}
-                    disabled={saving}
-                  >
-                    {saving ? "Adding..." : "Add Task"}
-                  </button>
-                )}
+            {/* Due Date */}
+            <div>
+              <label className="text-gray-300 block mb-1">Due Date</label>
+              <input
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className="w-full px-3 py-2 rounded bg-gray-700 text-white"
+                min={today}
+              />
+            </div>
 
-                {task && (
-                  <button
-                    type="button"
-                    onClick={handleDelete}
-                    className="flex-1 py-2 rounded bg-red-600 text-white disabled:opacity-60"
-                    disabled={saving}
-                  >
-                    {saving ? "Deleting..." : "Delete Task"}
-                  </button>
-                )}
+            {/* Subtasks */}
+            <div className="p-3 bg-gray-800 rounded">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-white font-semibold">Subtasks</h3>
+                <button
+                  type="button"
+                  onClick={addSubtask}
+                  className={`px-3 py-1 rounded text-white ${color}`}
+                >
+                  + Add Subtask
+                </button>
               </div>
 
-              {task?._id && (
-                <p className="text-gray-400 text-xs mt-1">
-                  {saving ? "Saving changes..." : "Edits are auto-saved."}
-                </p>
+              <div
+                className={`space-y-2 transition-all duration-300 ${
+                  subtasks.length > 2 ? "max-h-48 overflow-y-auto pr-1 custom-scrollbar" : ""
+                }`}
+              >
+                {subtasks.length === 0 && (
+                  <p className="text-gray-400 text-sm">No subtasks yet.</p>
+                )}
+                {subtasks.map((st, idx) => (
+                  <div key={idx} className="flex flex-col sm:flex-row gap-2 items-center">
+                    <input
+                      className="flex-1 px-3 py-2 rounded bg-gray-700 text-white"
+                      placeholder="Subtask title"
+                      value={st.title}
+                      onChange={(e) => updateSubtask(idx, "title", e.target.value)}
+                    />
+                    <select
+                      value={st.status}
+                      onChange={(e) => updateSubtask(idx, "status", e.target.value)}
+                      className="px-2 py-2 rounded bg-gray-700 text-white"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="completed">Completed</option>
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => removeSubtask(idx)}
+                      className="px-2 py-2 rounded bg-red-600 text-white"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {error && <p className="text-red-400 text-sm">{error}</p>}
+
+            {/* Action buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 mt-2">
+              {!task && (
+                <button
+                  type="submit"
+                  className={`flex-1 py-2 rounded text-white ${color} disabled:opacity-60`}
+                  disabled={saving}
+                >
+                  {saving ? "Adding..." : "Add Task"}
+                </button>
               )}
-            </form>
+
+              {task && (
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  className="flex-1 py-2 rounded bg-red-600 text-white disabled:opacity-60"
+                  disabled={saving}
+                >
+                  {saving ? "Deleting..." : "Delete Task"}
+                </button>
+              )}
+            </div>
+
+            {task?._id && (
+              <p className="text-gray-400 text-xs mt-1">
+                {saving ? "Saving changes..." : "Edits are auto-saved."}
+              </p>
+            )}
+          </form>
+        </div>
+
+        {/* Right: User Info */}
+        <aside className="w-full md:w-2/5 bg-gray-700/20 p-6 border-t md:border-t-0 md:border-l border-gray-600 flex flex-col items-center text-center">
+          <div className={`w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center mb-4 ${color}`}>
+            <span className="text-lg md:text-xl font-bold">{user?.name?.[0] || "U"}</span>
           </div>
 
-          {/* Right: User Info */}
-          <aside className="hidden md:block md:w-2/5 bg-gray-700/20 p-6 border-l border-gray-600">
-            <div className="h-full flex flex-col justify-start items-center text-center text-white">
-              <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-4 ${color}`}>
-                <span className="text-xl font-bold">{user?.name?.[0] || "U"}</span>
-              </div>
+          <div className="mb-4">
+            <h4 className="font-semibold">{user?.name || "Unknown User"}</h4>
+            <p className="text-sm text-gray-200/80">{user?.email || "no-email@example.com"}</p>
+          </div>
 
-              <div className="mb-4">
-                <h4 className="font-semibold">{user?.name || "Unknown User"}</h4>
-                <p className="text-sm text-gray-200/80">{user?.email || "no-email@example.com"}</p>
-              </div>
+          <div className="text-left text-sm bg-gray-800/40 p-3 rounded w-full">
+            <p className="text-gray-300 font-semibold mb-1">User Details</p>
+            <p className="text-gray-200">
+              <strong>Name:</strong> {user?.name}
+            </p>
+            <p className="text-gray-200">
+              <strong>Email:</strong> {user?.email}
+            </p>
+          </div>
 
-              <div className="text-left text-sm bg-gray-800/40 p-3 rounded w-full">
-                <p className="text-gray-300 font-semibold mb-1">User Details</p>
-                <p className="text-gray-200"><strong>Name:</strong> {user?.name}</p>
-                <p className="text-gray-200"><strong>Email:</strong> {user?.email}</p>
-              </div>
-
-              <blockquote className="mt-6 text-blue-200 italic text-sm">
-                "The only way to do great work is to love what you do."
-              </blockquote>
-            </div>
-          </aside>
-        </div>
+          <blockquote className="mt-6 text-blue-200 italic text-sm">
+            "The only way to do great work is to love what you do."
+          </blockquote>
+        </aside>
       </div>
 
-      {/* Custom scrollbar styles */}
+      {/* Custom scrollbar */}
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: #4b5563; /* gray-600 */
+          background-color: #4b5563;
           border-radius: 9999px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background-color: #6b7280; /* gray-500 */
+          background-color: #6b7280;
         }
       `}</style>
     </div>

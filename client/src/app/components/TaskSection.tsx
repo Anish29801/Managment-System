@@ -20,9 +20,8 @@ export const TaskSection: React.FC<TaskSectionProps> = ({
   droppableId,
 }) => {
   return (
-    <div className="w-full md:w-1/3 p-2 relative">
-      {/* Section container with shadow */}
-      <div className="bg-gray-800 rounded-2xl shadow-xl p-4 pt-6 relative">
+    <div className="w-full sm:w-full md:w-1/2 lg:w-1/3 p-2">
+      <div className="bg-gray-800 rounded-2xl shadow-xl p-4 pt-8 relative">
         {/* Floating label */}
         <h2 className="absolute -top-3 left-4 bg-gray-900 px-3 py-1 text-white font-bold rounded-full text-sm shadow">
           {title}
@@ -36,10 +35,14 @@ export const TaskSection: React.FC<TaskSectionProps> = ({
               className="space-y-4 min-h-[200px] mt-2"
             >
               {tasks.length === 0 ? (
-                <p className="text-gray-400">No tasks here.</p>
+                <p className="text-gray-400 text-sm">No tasks here.</p>
               ) : (
                 tasks.map((task, index) => (
-                  <Draggable key={task._id!} draggableId={task._id!} index={index}>
+                  <Draggable
+                    key={task._id!}
+                    draggableId={task._id!}
+                    index={index}
+                  >
                     {(provided) => (
                       <div
                         ref={provided.innerRef}
