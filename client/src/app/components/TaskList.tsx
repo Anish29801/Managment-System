@@ -16,16 +16,13 @@ export const TaskList: React.FC<TaskListProps> = ({
 }) => {
   if (tasks.length === 0)
     return (
-      <p className="text-gray-400 text-center mt-12 text-sm md:text-base">
+      <p className="text-gray-400 text-center mt-12 text-sm sm:text-base">
         No tasks yet. Start by adding your first one!
       </p>
     );
 
   return (
-    <ul
-      className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 
-                 auto-rows-fr"
-    >
+    <ul className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-fr">
       {tasks.map((task) => (
         <TaskItem
           key={task._id}
@@ -37,3 +34,5 @@ export const TaskList: React.FC<TaskListProps> = ({
     </ul>
   );
 };
+
+export default TaskList;

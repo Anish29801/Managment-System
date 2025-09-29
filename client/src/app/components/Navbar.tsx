@@ -83,7 +83,7 @@ export default function Navbar() {
                     </div>
                     <button
                       onClick={handleLogout}
-                      className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white transition"
+                      className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-red-800 transition"
                     >
                       Logout
                     </button>
@@ -142,7 +142,7 @@ export default function Navbar() {
                   
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white transition"
+                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-white/5 hover:text-red-800 transition"
                   >
                     Logout
                   </button>

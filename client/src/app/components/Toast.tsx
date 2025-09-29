@@ -21,24 +21,35 @@ const Toast: React.FC<ToastProps> = ({
   duration = 3000,
   onClose,
 }) => {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    setVisible(true); // Animate in
+
     const timer = setTimeout(() => {
-      setVisible(false);
+      setVisible(false); // Animate out
       if (onClose) onClose();
     }, duration);
 
     return () => clearTimeout(timer);
   }, [duration, onClose]);
 
-  return visible ? (
+  return (
     <div
-      className={`fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-lg font-medium text-xs sm:text-sm md:text-base text-white transition-all duration-300 z-50 ${colorMap[color]}`}
+      className={`
+        fixed top-4 sm:top-6 left-1/2 -translate-x-1/2
+        px-4 sm:px-6 py-2 sm:py-3
+        rounded-lg shadow-lg font-medium
+        text-xs sm:text-sm md:text-base text-white
+        z-50
+        ${colorMap[color]}
+        transition-all duration-500
+        ${visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"}
+      `}
     >
       {message}
     </div>
-  ) : null;
+  );
 };
 
 export default Toast;

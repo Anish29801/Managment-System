@@ -23,7 +23,6 @@ export default function Dashboard() {
   const [endDate, setEndDate] = useState("");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  /* ---------------- Fetch Tasks from Backend ---------------- */
   const fetchTasks = async () => {
     if (!user) return;
     try {
@@ -36,18 +35,16 @@ export default function Dashboard() {
       });
       setTasks(Array.isArray(res.data) ? res.data : []);
     } catch (err: any) {
-      console.error("Failed to fetch tasks:", err.response?.data || err.message);
+      console.error(err);
       setTasks([]);
       setToastMessage("❌ Failed to fetch tasks");
     }
   };
 
-  /* ---------------- Trigger fetch when filters change ---------------- */
   useEffect(() => {
     fetchTasks();
   }, [user, searchQuery, startDate, endDate]);
 
-  /* ---------------- Handlers ---------------- */
   const handleAddClick = () => {
     setEditingTask(null);
     setShowForm(true);
@@ -66,7 +63,7 @@ export default function Dashboard() {
       fetchTasks();
       setToastMessage("✅ Task deleted successfully");
     } catch (err: any) {
-      console.error("Failed to delete task:", err.response?.data || err.message);
+      console.error(err);
       setToastMessage("❌ Failed to delete task");
     }
   };
@@ -80,25 +77,23 @@ export default function Dashboard() {
       destination.droppableId === "pending"
         ? "pending"
         : destination.droppableId === "inprogress"
-          ? "inprogress"
-          : "completed";
+        ? "inprogress"
+        : "completed";
 
     try {
       await axiosInstance.put(`/tasks/${draggableId}`, { status: newStatus });
       fetchTasks();
       setToastMessage(`✅ Task moved to ${newStatus}`);
     } catch (err: any) {
-      console.error("Failed to update task status:", err.response?.data || err.message);
+      console.error(err);
       setToastMessage("❌ Failed to update task status");
     }
   };
 
-  /* ---------------- Task Filtering (already filtered by backend) ---------------- */
   const pendingTasks = tasks.filter((t) => t.status === "pending");
   const inProgressTasks = tasks.filter((t) => t.status === "inprogress");
   const completedTasks = tasks.filter((t) => t.status === "completed");
 
-  /* ---------------- Greeting ---------------- */
   const greeting = user ? `Hi, ${user.name} Good ${getTimeOfDay()}` : "Hi, Guest";
   function getTimeOfDay(): string {
     const hour = new Date().getHours();
@@ -112,20 +107,20 @@ export default function Dashboard() {
       <div className="absolute inset-0 bg-white/5 backdrop-blur-sm pointer-events-none z-0"></div>
 
       <div className="relative z-10 w-full">
-        {/* Hero Section for Guests */}
         {!user && <HeroSection />}
 
-        {/* Greeting + Clock + Add/Search for Logged In Users */}
         {user && (
-          <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-            <div className="flex flex-col md:flex-row items-center gap-4">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-6">
+            {/* Greeting + Clock */}
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4 w-full md:w-auto">
               <h1 className="text-3xl font-bold text-white tracking-wide">{greeting}</h1>
               <Clock />
             </div>
 
-            <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto bg-gray-800/70 p-3 rounded-xl shadow-lg">
+            {/* Filters & Search */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex gap-4 w-full bg-gray-800/70 p-4 rounded-xl shadow-lg">
               {/* Search */}
-              <div className="relative w-full md:w-96">
+              <div className="relative w-full">
                 <input
                   type="text"
                   placeholder="Search tasks..."
@@ -136,38 +131,38 @@ export default function Dashboard() {
                 <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
               </div>
 
-              {/* Date Range */}
-              <div className="flex gap-2 items-center">
+              {/* Date Filters */}
+              <div className="flex gap-2 w-full">
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="px-3 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 px-3 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   max={endDate || undefined}
                 />
-                <span className="text-gray-300">to</span>
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="px-3 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 px-3 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   min={startDate || undefined}
                 />
               </div>
 
-              {/* Add Task Button */}
-              <button
-                onClick={handleAddClick}
-                className="h-10 px-4 rounded-md bg-blue-600 hover:bg-blue-700 shadow-md transition-colors text-sm font-medium"
-              >
-                Add Task
-              </button>
-
+              {/* Add Task */}
+              <div className="w-full sm:w-auto">
+                <button
+                  onClick={handleAddClick}
+                  className="w-full h-10 px-4 rounded-md bg-blue-600 hover:bg-blue-700 shadow-md transition-colors text-sm font-medium"
+                >
+                  Add Task
+                </button>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Cards for Guests */}
+        {/* Guest Section */}
         {!user && (
           <div className="mt-10 flex flex-col items-center gap-8">
             <div className="bg-red-900/50 border border-red-500 rounded-2xl px-6 py-5 text-center shadow-xl">
@@ -177,27 +172,60 @@ export default function Dashboard() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
-              <Card icon={<FaTasks />} title="Organize Tasks" description="Easily create, update, and manage tasks across categories." />
-              <Card icon={<FaChartLine />} title="Track Progress" description="Visualize task status with drag-and-drop and progress tracking." />
-              <Card icon={<FaCheckCircle />} title="Boost Productivity" description="Stay focused and achieve goals with a structured workflow." />
+              <Card
+                icon={<FaTasks />}
+                title="Organize Tasks"
+                description="Easily create, update, and manage tasks across categories."
+              />
+              <Card
+                icon={<FaChartLine />}
+                title="Track Progress"
+                description="Visualize task status with drag-and-drop and progress tracking."
+              />
+              <Card
+                icon={<FaCheckCircle />}
+                title="Boost Productivity"
+                description="Stay focused and achieve goals with a structured workflow."
+              />
             </div>
           </div>
         )}
 
-        {/* Tasks Sections for Logged In Users */}
+        {/* Task Board */}
         {user && (
           <DragDropContext onDragEnd={handleDragEnd}>
             <div className="flex flex-col md:flex-row gap-6 mt-6">
-              <TaskSection droppableId="pending" title="Pending" description="Tasks you need to start" tasks={pendingTasks} onUpdate={handleUpdate} onDelete={handleDelete} />
-              <TaskSection droppableId="inprogress" title="In Progress" description="Tasks you are working on" tasks={inProgressTasks} onUpdate={handleUpdate} onDelete={handleDelete} />
-              <TaskSection droppableId="completed" title="Completed" description="Tasks you have finished" tasks={completedTasks} onUpdate={handleUpdate} onDelete={handleDelete} />
+              <TaskSection
+                droppableId="pending"
+                title="Pending"
+                tasks={pendingTasks}
+                onUpdate={handleUpdate}
+                onDelete={handleDelete}
+              />
+              <TaskSection
+                droppableId="inprogress"
+                title="In Progress"
+                tasks={inProgressTasks}
+                onUpdate={handleUpdate}
+                onDelete={handleDelete}
+              />
+              <TaskSection
+                droppableId="completed"
+                title="Completed"
+                tasks={completedTasks}
+                onUpdate={handleUpdate}
+                onDelete={handleDelete}
+              />
             </div>
           </DragDropContext>
         )}
 
         {/* Task Form Modal */}
         {showForm && user && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowForm(false)}>
+          <div
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            onClick={() => setShowForm(false)}
+          >
             <div className="relative w-full max-w-md" onClick={(e) => e.stopPropagation()}>
               <TaskForm
                 user={user}
@@ -212,9 +240,14 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Toast Notification */}
+        {/* Toast Message */}
         {toastMessage && (
-          <Toast message={toastMessage} color="green" duration={2000} onClose={() => setToastMessage(null)} />
+          <Toast
+            message={toastMessage}
+            color="green"
+            duration={2000}
+            onClose={() => setToastMessage(null)}
+          />
         )}
       </div>
     </div>
