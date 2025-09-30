@@ -83,8 +83,8 @@ export default function Dashboard() {
       destination.droppableId === "pending"
         ? "pending"
         : destination.droppableId === "inprogress"
-        ? "inprogress"
-        : "completed";
+          ? "inprogress"
+          : "completed";
 
     try {
       await axiosInstance.put(`/tasks/${draggableId}`, { status: newStatus });
@@ -140,13 +140,13 @@ export default function Dashboard() {
               {/* Date Filters */}
               <div className="flex flex-col sm:flex-row gap-2 w-full items-center">
                 {/* Start Date */}
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full px-3 py-2 pr-8 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
-                    max={endDate || undefined}
-                  />
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full px-3 py-2 pr-8 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                  max={endDate || undefined}
+                />
 
                 {/* Arrow between dates (responsive) */}
                 <div className="flex justify-center items-center w-full sm:w-auto">
@@ -155,24 +155,25 @@ export default function Dashboard() {
                 </div>
 
                 {/* End Date */}
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full px-3 py-2 pr-8 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
-                    min={startDate || undefined}
-                  />
-                </div>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full px-3 py-2 pr-8 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                  min={startDate || undefined}
+                />
+              </div>
 
               {/* Add Task */}
-              <div className="w-full sm:w-auto">
+              <div className="w-full sm:w-48 md:w-56 lg:w-64">
                 <button
                   onClick={handleAddClick}
-                  className="w-full h-10 px-4 rounded-md bg-blue-600 hover:bg-blue-700 shadow-md transition-colors text-sm font-medium"
+                  className="w-full h-12 px-6 rounded-md bg-blue-600 hover:bg-blue-700 shadow-md transition-colors text-sm font-medium"
                 >
                   Add Task
                 </button>
               </div>
+
             </div>
           </div>
         )}
