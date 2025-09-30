@@ -26,10 +26,13 @@ const STATUS_MAP: Record<Task["status"], { label: string; color: string }> = {
   completed: { label: "Completed", color: "#93c5fd" },
 };
 
+type FilterType = "all" | "3months" | "1month";
+
 export default function Charts() {
   const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<FilterType>("3months"); // Default: Last 3 months
 
   const fetchTasks = async () => {
     setLoading(true);
@@ -49,13 +52,28 @@ export default function Charts() {
     else setTasks([]);
   }, [user]);
 
+  // Apply filter safely
+  const filteredTasks = useMemo(() => {
+    if (filter === "all") return tasks;
+    const now = new Date();
+    const cutoff =
+      filter === "3months"
+        ? new Date(new Date().setMonth(now.getMonth() - 3))
+        : new Date(new Date().setMonth(now.getMonth() - 1));
+
+    return tasks.filter((t) => {
+      if (!t.createdAt) return false; // guard against undefined
+      return new Date(t.createdAt) >= cutoff;
+    });
+  }, [tasks, filter]);
+
   const chartData = useMemo(() => {
     const counts: Record<Task["status"], number> = {
       pending: 0,
       inprogress: 0,
       completed: 0,
     };
-    tasks.forEach((t) => {
+    filteredTasks.forEach((t) => {
       if (counts[t.status] !== undefined) counts[t.status]++;
     });
     return (Object.keys(STATUS_MAP) as Task["status"][]).map((status) => ({
@@ -63,7 +81,7 @@ export default function Charts() {
       value: counts[status],
       status,
     }));
-  }, [tasks]);
+  }, [filteredTasks]);
 
   if (loading)
     return <p className="text-center mt-20 text-white text-lg">Loading charts...</p>;
@@ -115,7 +133,7 @@ export default function Charts() {
   return (
     <section className="w-full px-4 lg:px-12 py-8">
       {/* Heading */}
-      <div className="text-center mb-8">
+      <div className="text-center mb-6">
         <h2 className="text-3xl lg:text-4xl font-bold text-white">
           Task Status Overview
         </h2>
@@ -124,12 +142,25 @@ export default function Charts() {
         </p>
       </div>
 
+      {/* Filter Dropdown */}
+      <div className="flex justify-center mb-8">
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value as FilterType)}
+          className="px-4 py-2 rounded-xl bg-[#1e293b] text-gray-200 font-medium border border-gray-600 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+        >
+          <option value="all">Full Dataset</option>
+          <option value="3months">Last 3 Months</option>
+          <option value="1month">Last Month</option>
+        </select>
+      </div>
+
       {/* Charts Container */}
       <div className="flex flex-col lg:flex-row gap-6 w-full h-[70vh] min-h-[450px]">
         {/* Donut Chart */}
         <div className="flex-1 bg-[#151d27] rounded-3xl p-6 shadow-xl flex items-center justify-center">
           <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
+            <PieChart key={filter}>
               <Pie
                 data={chartData}
                 dataKey="value"
@@ -140,6 +171,10 @@ export default function Charts() {
                 outerRadius="70%"
                 labelLine={false}
                 label={renderCenterLabel}
+                isAnimationActive={true}
+                animationBegin={0}
+                animationDuration={800}
+                animationEasing="ease-out"
               >
                 {chartData.map((entry) => (
                   <Cell key={entry.status} fill={STATUS_MAP[entry.status].color} />
@@ -160,7 +195,7 @@ export default function Charts() {
         {/* Bar Chart */}
         <div className="flex-1 bg-[#151d27] rounded-3xl p-6 shadow-xl flex items-center justify-center">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} barCategoryGap="30%">
+            <BarChart data={chartData} barCategoryGap="30%" key={filter}>
               <XAxis dataKey="name" stroke="#ffffff" tick={{ fontSize: 14 }} />
               <YAxis stroke="#ffffff" tick={{ fontSize: 14 }} />
               <Tooltip content={<CustomTooltip />} />
@@ -171,7 +206,15 @@ export default function Charts() {
                 verticalAlign="top"
                 align="center"
               />
-              <Bar dataKey="value" barSize={50} radius={[5, 5, 0, 0]}>
+              <Bar
+                dataKey="value"
+                barSize={50}
+                radius={[5, 5, 0, 0]}
+                isAnimationActive={true}
+                animationBegin={0}
+                animationDuration={800}
+                animationEasing="ease-out"
+              >
                 {chartData.map((entry) => (
                   <Cell key={entry.status} fill={STATUS_MAP[entry.status].color} />
                 ))}
