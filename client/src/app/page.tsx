@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FaSearch, FaTasks, FaChartLine, FaCheckCircle } from "react-icons/fa";
+import {
+  FaSearch,
+  FaTasks,
+  FaChartLine,
+  FaCheckCircle,
+  FaChevronDown,
+  FaChevronRight,
+} from "react-icons/fa";
 import { useAuth } from "./context/AuthContext";
 import TaskForm from "./components/TaskForm";
 import { Task } from "./type";
@@ -131,22 +138,31 @@ export default function Dashboard() {
               </div>
 
               {/* Date Filters */}
-              <div className="flex gap-2 w-full">
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="flex-1 px-3 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  max={endDate || undefined}
-                />
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="flex-1 px-3 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  min={startDate || undefined}
-                />
-              </div>
+              <div className="flex flex-col sm:flex-row gap-2 w-full items-center">
+                {/* Start Date */}
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full px-3 py-2 pr-8 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                    max={endDate || undefined}
+                  />
+
+                {/* Arrow between dates (responsive) */}
+                <div className="flex justify-center items-center w-full sm:w-auto">
+                  <FaChevronDown className="text-gray-300 text-lg block sm:hidden" />
+                  <FaChevronRight className="text-gray-300 text-lg hidden sm:block" />
+                </div>
+
+                {/* End Date */}
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full px-3 py-2 pr-8 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                    min={startDate || undefined}
+                  />
+                </div>
 
               {/* Add Task */}
               <div className="w-full sm:w-auto">
