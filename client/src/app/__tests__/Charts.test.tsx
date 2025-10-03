@@ -1,7 +1,7 @@
 // src/app/__tests__/Charts.test.tsx
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import Charts from "../Charts";
+import Charts from "@/app/charts/page";
 import { useAuth } from "../context/AuthContext";
 import axiosInstance from "@/utils/axiosConfg";
 import { Task } from "../type";
