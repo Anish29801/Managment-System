@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Clock component matches snapshot 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="clock"
+  >
+    Mock Clock
+  </div>
+</DocumentFragment>
+`;
