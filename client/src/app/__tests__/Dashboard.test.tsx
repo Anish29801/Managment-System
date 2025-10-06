@@ -3,21 +3,21 @@ import { render, screen, act, waitFor } from "@testing-library/react";
 import Dashboard from "@/app/page";
 import { useAuth } from "@/app/context/AuthContext";
 
-// 🧩 Mock Clock component
+/* 🧩 Mock Clock component */
 jest.mock("@/app/components/Clock", () => ({
   __esModule: true,
   default: () => <div data-testid="clock">Mock Clock</div>,
 }));
 
-// 🧩 Mock useAuth hook
+/* 🧩 Mock useAuth hook */
 jest.mock("@/app/context/AuthContext", () => ({
   useAuth: jest.fn(),
 }));
 
-// 🧩 Mock server.ts
-import mockAxiosInstance from "@/utils/server";
+/* 🧩 Mock axiosInstance */
+import mockAxiosInstance from "@/utils/axiosConfg";
 
-jest.mock("@/app/utils/server", () => {
+jest.mock("@/utils/axiosConfg", () => {
   const mInstance = {
     get: jest.fn(),
     post: jest.fn(),
@@ -34,6 +34,7 @@ jest.mock("@/app/utils/server", () => {
   };
 });
 
+/* 🧩 Setup localStorage mock */
 beforeAll(() => {
   Object.defineProperty(window, "localStorage", {
     value: (() => {
