@@ -10,9 +10,17 @@ const PORT = process.env.PORT || 8000;
 const server = express();
 
 // Enable CORS before routes
+const allowedOrigins = ["http://localhost:3000", "http://localhost:5173"];
 server.use(cors({
-  origin: "http://localhost:3000",  // explicitly allow your frontend
-  methods: ["GET", "POST", "PUT", "PATCH","DELETE"],
+  origin: (origin, callback) => {
+    // Allow requests with no origin (server-to-server, Postman, etc.)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: true
 }));
 

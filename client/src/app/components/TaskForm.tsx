@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import { z, ZodError } from "zod";
 import { useAuth } from "../context/AuthContext";
@@ -34,9 +34,10 @@ interface TaskFormProps {
 }
 
 /* ---------------------------- Debounce Helper -------------------------- */
-const debounce = (fn: (...args: any[]) => void, delay = 800) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const debounce = <T extends (...args: any[]) => void>(fn: T, delay = 800) => {
   let timer: ReturnType<typeof setTimeout> | null = null;
-  return (...args: any[]) => {
+  return (...args: Parameters<T>) => {
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => fn(...args), delay);
   };
@@ -49,20 +50,20 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
   const [title, setTitle] = useState(task?.title || "");
   const [description, setDescription] = useState(task?.description || "");
   const [status, setStatus] = useState<"pending" | "inprogress" | "completed">(
-    (task?.status as any) || "pending"
+    task?.status || "pending"
   );
   const [priority, setPriority] = useState<"low" | "medium" | "high">(
-    (task?.priority as any) || "medium"
+    task?.priority || "medium"
   );
   const [dueDate, setDueDate] = useState(task?.dueDate ? task.dueDate.split("T")[0] : "");
   const [subtasks, setSubtasks] = useState<{ title: string; status: "pending" | "completed" }[]>(
-    (Array.isArray((task as any)?.subtasks) ? (task as any).subtasks : []) || []
+    Array.isArray(task?.subtasks) ? task.subtasks : []
   );
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   /* ----------------------------- Auto Update ------------------------------ */
-  const autoUpdate = async (updatedTask: any) => {
+  const autoUpdate = useCallback(async (updatedTask: Record<string, unknown>) => {
     if (!task?._id) return;
     try {
       taskSchema.parse(updatedTask);
@@ -72,20 +73,25 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
       });
       setSaving(false);
       setError(null);
-    } catch (err: any) {
+    } catch (err) {
       setSaving(false);
       if (err instanceof ZodError) setError(err.issues[0].message);
-      else setError(err?.response?.data?.error || "Auto-update failed");
+      else if (err && typeof err === "object" && "response" in err) {
+        const axiosErr = err as { response?: { data?: { error?: string } } };
+        setError(axiosErr.response?.data?.error || "Auto-update failed");
+      } else {
+        setError("Auto-update failed");
+      }
     }
-  };
+  }, [task?._id]);
 
-  const debouncedAutoUpdate = useMemo(() => debounce(autoUpdate, 800), [task?._id]);
+  const debouncedAutoUpdate = useMemo(() => debounce(autoUpdate, 800), [autoUpdate]);
 
   useEffect(() => {
     if (task?._id) {
       debouncedAutoUpdate({ title, description, status, priority, dueDate, subtasks });
     }
-  }, [title, description, status, priority, dueDate, subtasks]);
+  }, [title, description, status, priority, dueDate, subtasks, debouncedAutoUpdate, task?._id]);
 
   /* ------------------------------- Handlers ------------------------------- */
   const handleAdd = async (e: React.FormEvent) => {
@@ -101,10 +107,15 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
       setSaving(false);
       onTaskAdded();
       onClose();
-    } catch (err: any) {
+    } catch (err) {
       setSaving(false);
       if (err instanceof ZodError) setError(err.issues[0].message);
-      else setError(err?.response?.data?.error || "Failed to add task");
+      else if (err && typeof err === "object" && "response" in err) {
+        const axiosErr = err as { response?: { data?: { error?: string } } };
+        setError(axiosErr.response?.data?.error || "Failed to add task");
+      } else {
+        setError("Failed to add task");
+      }
     }
   };
 
@@ -119,28 +130,39 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
       setSaving(false);
       onTaskAdded();
       onClose();
-    } catch (err: any) {
+    } catch (err) {
       setSaving(false);
-      setError(err?.response?.data?.error || "Failed to delete task");
+      if (err && typeof err === "object" && "response" in err) {
+        const axiosErr = err as { response?: { data?: { error?: string } } };
+        setError(axiosErr.response?.data?.error || "Failed to delete task");
+      } else {
+        setError("Failed to delete task");
+      }
     }
   };
 
   const addSubtask = () => setSubtasks([...subtasks, { title: "", status: "pending" }]);
   const updateSubtask = (index: number, field: "title" | "status", value: string) => {
-    const copy = [...subtasks];
-    (copy[index] as any)[field] = value;
-    setSubtasks(copy);
+    setSubtasks((prev) => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
   };
   const removeSubtask = (index: number) => setSubtasks(subtasks.filter((_, i) => i !== index));
 
-  const handleClickOutside = (e: MouseEvent) => {
-    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-      onTaskAdded();
-      onClose();
-    }
-  };
+  const onTaskAddedRef = useRef(onTaskAdded);
+  const onCloseRef = useRef(onClose);
+  onTaskAddedRef.current = onTaskAdded;
+  onCloseRef.current = onClose;
 
   useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        onTaskAddedRef.current();
+        onCloseRef.current();
+      }
+    };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -191,7 +213,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
                 <label className="text-gray-300 block mb-1">Status</label>
                 <select
                   value={status}
-                  onChange={(e) => setStatus(e.target.value as any)}
+                  onChange={(e) => setStatus(e.target.value as "pending" | "inprogress" | "completed")}
                   className="w-full px-3 py-2 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-indigo-500 transition"
                 >
                   <option value="pending">Pending</option>
@@ -204,7 +226,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
                 <label className="text-gray-300 block mb-1">Priority</label>
                 <select
                   value={priority}
-                  onChange={(e) => setPriority(e.target.value as any)}
+                  onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}
                   className="w-full px-3 py-2 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-indigo-500 transition"
                 >
                   <option value="low">Low</option>
@@ -325,7 +347,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ user, task, onClose, onTaskAdded })
           </div>
 
           <blockquote className="mt-6 text-blue-200 italic text-sm">
-            "The only way to do great work is to love what you do."
+            &ldquo;The only way to do great work is to love what you do.&rdquo;
           </blockquote>
         </aside>
       </div>

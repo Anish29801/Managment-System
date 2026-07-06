@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from "react";
 import { User, AuthContextType } from "../type";
 import axiosInstance from "@/utils/axiosConfg";
 
@@ -9,14 +9,17 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  // 🎨 Avatar colors list
-  const avatarColors = [
-    "bg-blue-600",
-    "bg-green-600",
-    "bg-red-600",
-    "bg-yellow-600",
-    "bg-purple-600",
-  ];
+  // 🎨 Avatar colors list (stable reference)
+  const avatarColors = useMemo(
+    () => [
+      "bg-blue-600",
+      "bg-green-600",
+      "bg-red-600",
+      "bg-yellow-600",
+      "bg-purple-600",
+    ],
+    []
+  );
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -33,14 +36,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           avatarColors[name.charCodeAt(0) % avatarColors.length] || "bg-gray-600";
 
         setUser({ ...data.user, color });
-      } catch (err) {
+      } catch {
         setUser(null);
         localStorage.removeItem("token");
       }
     };
 
     fetchUser();
-  }, []);
+  }, [avatarColors]);
 
   const logout = () => {
     localStorage.removeItem("token");

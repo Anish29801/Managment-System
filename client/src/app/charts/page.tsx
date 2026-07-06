@@ -12,7 +12,6 @@ import {
   XAxis,
   YAxis,
   ResponsiveContainer,
-  TooltipProps,
   PieLabelRenderProps,
 } from "recharts";
 import axiosInstance from "@/utils/axiosConfg";
@@ -39,8 +38,8 @@ export default function Charts() {
     try {
       const res = await axiosInstance.get<Task[]>("/tasks");
       setTasks(Array.isArray(res.data) ? res.data : []);
-    } catch (err: any) {
-      console.error("Failed to fetch tasks:", err.response?.data || err.message);
+    } catch (err) {
+      console.error("Failed to fetch tasks:", err);
       setTasks([]);
     } finally {
       setLoading(false);
@@ -97,9 +96,12 @@ export default function Charts() {
   const CustomTooltip = ({
     active,
     payload,
-  }: TooltipProps<number, string> & { payload?: any[] }) => {
+  }: {
+    active?: boolean;
+    payload?: { payload: ChartPayload; name: string; value: number }[];
+  }) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload as ChartPayload;
+      const data = payload[0].payload;
       return (
         <div className="bg-gray-900 p-3 rounded-lg shadow-lg text-white border-none">
           <p className="font-semibold text-sm">{data.name}</p>

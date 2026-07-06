@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   FaSearch,
   FaTasks,
@@ -30,7 +30,7 @@ export default function Dashboard() {
   const [endDate, setEndDate] = useState("");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     if (!user) return;
     try {
       const res = await axiosInstance.get<Task[]>("/tasks", {
@@ -41,16 +41,16 @@ export default function Dashboard() {
         },
       });
       setTasks(Array.isArray(res.data) ? res.data : []);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       setTasks([]);
       setToastMessage("❌ Failed to fetch tasks");
     }
-  };
+  }, [user, searchQuery, startDate, endDate]);
 
   useEffect(() => {
     fetchTasks();
-  }, [user, searchQuery, startDate, endDate]);
+  }, [fetchTasks]);
 
   const handleAddClick = () => {
     setEditingTask(null);
@@ -68,7 +68,7 @@ export default function Dashboard() {
       await axiosInstance.delete(`/tasks/${taskId}`);
       fetchTasks();
       setToastMessage("✅ Task deleted successfully");
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       setToastMessage("❌ Failed to delete task");
     }
@@ -90,7 +90,7 @@ export default function Dashboard() {
       await axiosInstance.put(`/tasks/${draggableId}`, { status: newStatus });
       fetchTasks();
       setToastMessage(`✅ Task moved to ${newStatus}`);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       setToastMessage("❌ Failed to update task status");
     }

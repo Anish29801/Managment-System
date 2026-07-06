@@ -24,6 +24,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${poppins.variable} antialiased flex flex-col min-h-screen`}
+        suppressHydrationWarning
       >
         {/* ✅ Provide global auth context */}
         <AuthProvider>
