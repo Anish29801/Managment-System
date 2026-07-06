@@ -2,6 +2,7 @@ import express, { Application } from "express";
 import routes from "./routes";
 import dotenv from "dotenv";
 import connectDB from "./model/config/conn";
+import path from "path";
 
 // Load env vars
 dotenv.config();
@@ -9,6 +10,9 @@ dotenv.config();
 const app: Application = express();
 
 app.use(express.json());
+
+// Serve uploaded files statically
+app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 
 app.use("/", routes);
 

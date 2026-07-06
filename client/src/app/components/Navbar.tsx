@@ -74,13 +74,30 @@ export default function Navbar() {
               <div className="hidden sm:flex items-center space-x-3">
                 {user ? (
                   <>
-                    <div
-                      className={`flex items-center justify-center w-8 h-8 rounded-full text-white font-medium ${
-                        user.color || "bg-gray-600"
-                      }`}
+                    <a
+                      href="/profile"
+                      className="flex items-center space-x-2 hover:opacity-80 transition"
+                      title="Edit Profile"
                     >
-                      {user.name[0].toUpperCase()}
-                    </div>
+                      {user.image ? (
+                        <img
+                          src={`http://localhost:8080${user.image}`}
+                          alt={user.name}
+                          className="w-8 h-8 rounded-full object-cover border-2 border-blue-500"
+                        />
+                      ) : (
+                        <div
+                          className={`flex items-center justify-center w-8 h-8 rounded-full text-white font-medium ${
+                            user.color || "bg-gray-600"
+                          }`}
+                        >
+                          {user.name[0].toUpperCase()}
+                        </div>
+                      )}
+                      <span className="text-gray-300 text-sm font-medium">
+                        {user.name}
+                      </span>
+                    </a>
                     <button
                       onClick={handleLogout}
                       className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-red-800 transition"
@@ -139,7 +156,27 @@ export default function Navbar() {
 
               {user ? (
                 <>
-                  
+                  <a
+                    href="/profile"
+                    className="flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-white/5 hover:text-white transition"
+                  >
+                    {user.image ? (
+                      <img
+                        src={`http://localhost:8080${user.image}`}
+                        alt={user.name}
+                        className="w-7 h-7 rounded-full object-cover border border-blue-500"
+                      />
+                    ) : (
+                      <div
+                        className={`flex items-center justify-center w-7 h-7 rounded-full text-white font-medium text-sm ${
+                          user.color || "bg-gray-600"
+                        }`}
+                      >
+                        {user.name[0].toUpperCase()}
+                      </div>
+                    )}
+                    {user.name}
+                  </a>
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:bg-white/5 hover:text-red-800 transition"

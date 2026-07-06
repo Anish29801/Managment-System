@@ -30,12 +30,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const res = await axiosInstance.get("/users/me");
         const data = res.data;
 
-        // 🎨 assign color based on first letter
         const name = data.user?.name || "G";
         const color =
           avatarColors[name.charCodeAt(0) % avatarColors.length] || "bg-gray-600";
 
-        setUser({ ...data.user, color });
+        setUser({ ...data.user, color, image: data.user?.image || null });
       } catch {
         setUser(null);
         localStorage.removeItem("token");
