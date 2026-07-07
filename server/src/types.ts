@@ -1,50 +1,50 @@
-import { Document, Types } from "mongoose";
+// Plain TypeScript interfaces — no mongoose dependency
 
-export interface IActivity extends Document {
-  taskId: Types.ObjectId;
-  userId: Types.ObjectId;
+export interface IActivity {
+  taskId: string;
+  userId: string;
   action: string;
   oldValue?: string;
   newValue?: string;
   createdAt: Date;
 }
 
-export interface ISearchIndex extends Document {
-  taskId?: Types.ObjectId;
-  subtaskId?: Types.ObjectId;
+export interface ISearchIndex {
+  taskId?: string;
+  subtaskId?: string;
   title: string;
   content?: string;
   createdAt: Date;
 }
 
-// ✅ Fix: remove optional `_id` (Document already ensures _id exists)
-export interface ISubtask extends Document {
-  _id: Types.ObjectId; 
+export interface ISubtask {
+  id?: string;
   title: string;
   status: "pending" | "completed";
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-export interface ITask extends Document {
-  _id: Types.ObjectId;
+export interface ITask {
+  id?: string;
   title: string;
   description?: string;
   status: "pending" | "inprogress" | "completed";
   priority?: "low" | "medium" | "high";
   dueDate?: Date;
-  createdBy: Types.ObjectId;
-  subtasks: Types.DocumentArray<ISubtask>;
+  createdBy: string;
+  subtasks: ISubtask[];
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-export interface IUser extends Document {
+export interface IUser {
+  id?: string;
   name: string;
   email: string;
   password: string;
   image?: string;
   role: "user" | "admin";
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

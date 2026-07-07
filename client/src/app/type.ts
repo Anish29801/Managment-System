@@ -1,4 +1,3 @@
-import { Types } from "mongoose";
 import { ReactNode } from "react";
 
 export interface User {
@@ -38,7 +37,7 @@ export interface Task {
 }
 
 export interface SubtaskDTO {
-  _id?: Types.ObjectId | string; // Optional, because new subtasks may not have an ID yet
+  _id?: string; // Optional, because new subtasks may not have an ID yet
   title: string;
   status?: "pending" | "inprogress" | "completed"; // optional for creation
   createdAt?: Date;

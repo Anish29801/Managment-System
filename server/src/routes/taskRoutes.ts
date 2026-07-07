@@ -1,7 +1,6 @@
 import { Router, Request, Response } from "express";
 import { Task } from "../model/Task";
 import { verifyToken } from "../middleware/auth";
-import { ParsedQs } from "qs"
 
 const router = Router();
 
@@ -12,17 +11,16 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
 
     if (!title) return res.status(400).json({ message: "Title is required" });
 
-    const newTask = new Task({
+    const newTask = await Task.create({
       title,
       description,
       status: status || "pending",
-      dueDate,
+      dueDate: dueDate ? new Date(dueDate) : undefined,
       subtasks: subtasks || [],
-      createdBy: req.userId, // ✅ link task to current user
+      createdBy: req.userId!,
     });
 
-    const savedTask = await newTask.save();
-    res.status(201).json({ message: "Task created successfully", task: savedTask });
+    res.status(201).json({ message: "Task created successfully", task: newTask });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to add task", error });
@@ -33,45 +31,12 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
 router.get("/", verifyToken, async (req: Request, res: Response) => {
   try {
     const { search, startDate, endDate } = req.query;
-    const userId = req.userId;
+    const userId = req.userId!;
 
-    let query: any = { createdBy: userId };
-
-    // Search filter
-    if (search && typeof search === "string") {
-      const regex = new RegExp(search, "i");
-      query.$and = [
-        { createdBy: userId },
-        {
-          $or: [
-            { title: regex },
-            { description: regex },
-            { "subtasks.title": regex },
-          ],
-        },
-      ];
-    }
-
-    // Date filter
-    const start = startDate && typeof startDate === "string" ? new Date(startDate) : null;
-    const end = endDate && typeof endDate === "string" ? new Date(endDate) : null;
-
-    if (start || end) {
-      const dateFilter: any = {};
-      if (start) dateFilter.$gte = start;
-      if (end) dateFilter.$lte = end;
-
-      if (query.$and) {
-        query.$and.push({ dueDate: dateFilter });
-      } else {
-        query.$and = [{ createdBy: userId }, { dueDate: dateFilter }];
-        delete query.createdBy;
-      }
-    }
-
-    const tasks = await Task.find(query).populate({
-      path: "createdBy",
-      select: "name email",
+    const tasks = await Task.findByUser(userId, {
+      search: search as string | undefined,
+      startDate: startDate as string | undefined,
+      endDate: endDate as string | undefined,
     });
 
     res.status(200).json(tasks);
@@ -80,13 +45,11 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to fetch tasks", error });
   }
 });
+
 /* ------------------- Get Single Task ------------------- */
 router.get("/:id", verifyToken, async (req: Request, res: Response) => {
   try {
-    const task = await Task.findOne({
-      _id: req.params.id,
-      createdBy: req.userId,
-    }).populate("createdBy", "name email");
+    const task = await Task.findOne(req.params.id, req.userId!);
 
     if (!task) return res.status(404).json({ message: "Task not found" });
 
@@ -100,11 +63,7 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
 /* ------------------- Update Task ------------------- */
 router.put("/:id", verifyToken, async (req: Request, res: Response) => {
   try {
-    const updatedTask = await Task.findOneAndUpdate(
-      { _id: req.params.id, createdBy: req.userId },
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const updatedTask = await Task.update(req.params.id, req.userId!, req.body);
 
     if (!updatedTask)
       return res.status(404).json({ message: "Task not found" });
@@ -119,11 +78,7 @@ router.put("/:id", verifyToken, async (req: Request, res: Response) => {
 /* ------------------- Partially Update Task ------------------- */
 router.patch("/:id", verifyToken, async (req: Request, res: Response) => {
   try {
-    const updatedTask = await Task.findOneAndUpdate(
-      { _id: req.params.id, createdBy: req.userId },
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const updatedTask = await Task.update(req.params.id, req.userId!, req.body);
 
     if (!updatedTask)
       return res.status(404).json({ message: "Task not found" });
@@ -138,10 +93,7 @@ router.patch("/:id", verifyToken, async (req: Request, res: Response) => {
 /* ------------------- Delete Task ------------------- */
 router.delete("/:id", verifyToken, async (req: Request, res: Response) => {
   try {
-    const deletedTask = await Task.findOneAndDelete({
-      _id: req.params.id,
-      createdBy: req.userId,
-    });
+    const deletedTask = await Task.delete(req.params.id, req.userId!);
 
     if (!deletedTask)
       return res.status(404).json({ message: "Task not found" });
@@ -157,25 +109,20 @@ router.delete("/:id", verifyToken, async (req: Request, res: Response) => {
 });
 
 /* ------------------- Get Tasks by Date Range ------------------- */
-router.get("/date-range", verifyToken, async (req: Request, res: Response) => {
+router.get("/date-range/list", verifyToken, async (req: Request, res: Response) => {
   try {
     const { startDate, endDate } = req.query;
-    const userId = req.userId;
+    const userId = req.userId!;
 
     if (!startDate && !endDate)
       return res.status(400).json({ message: "Please provide at least one date" });
 
-    const dateQuery: any = { createdBy: userId };
+    const tasks = await Task.findByDateRange(
+      userId,
+      startDate as string | undefined,
+      endDate as string | undefined
+    );
 
-    if (startDate && endDate) {
-      dateQuery.dueDate = { $gte: new Date(startDate as string), $lte: new Date(endDate as string) };
-    } else if (startDate) {
-      dateQuery.dueDate = { $gte: new Date(startDate as string) };
-    } else if (endDate) {
-      dateQuery.dueDate = { $lte: new Date(endDate as string) };
-    }
-
-    const tasks = await Task.find(dateQuery).populate({ path: "createdBy", select: "name email" });
     res.status(200).json(tasks);
   } catch (error) {
     console.error(error);
@@ -189,11 +136,11 @@ router.get("/date-range", verifyToken, async (req: Request, res: Response) => {
 router.post("/:id/subtasks", verifyToken, async (req: Request, res: Response) => {
   try {
     const { title, status } = req.body;
-    const task = await Task.findOne({ _id: req.params.id, createdBy: req.userId });
-    if (!task) return res.status(404).json({ message: "Task not found" });
+    if (!title) return res.status(400).json({ message: "Subtask title is required" });
 
-    task.subtasks.push({ title, status: status || "pending" });
-    await task.save();
+    const task = await Task.addSubtask(req.params.id, req.userId!, { title, status });
+
+    if (!task) return res.status(404).json({ message: "Task not found" });
 
     res.status(201).json({ message: "Subtask added successfully", task });
   } catch (error) {
@@ -205,14 +152,9 @@ router.post("/:id/subtasks", verifyToken, async (req: Request, res: Response) =>
 // Update subtask
 router.patch("/:id/subtasks/:subtaskId", verifyToken, async (req: Request, res: Response) => {
   try {
-    const task = await Task.findOne({ _id: req.params.id, createdBy: req.userId });
+    const task = await Task.updateSubtask(req.params.id, req.userId!, req.params.subtaskId, req.body);
+
     if (!task) return res.status(404).json({ message: "Task not found" });
-
-    const subtask = task.subtasks.id(req.params.subtaskId);
-    if (!subtask) return res.status(404).json({ message: "Subtask not found" });
-
-    subtask.set(req.body);
-    await task.save();
 
     res.status(200).json({ message: "Subtask updated successfully", task });
   } catch (error) {
@@ -224,14 +166,9 @@ router.patch("/:id/subtasks/:subtaskId", verifyToken, async (req: Request, res: 
 // Delete subtask
 router.delete("/:id/subtasks/:subtaskId", verifyToken, async (req: Request, res: Response) => {
   try {
-    const task = await Task.findOne({ _id: req.params.id, createdBy: req.userId });
+    const task = await Task.deleteSubtask(req.params.id, req.userId!, req.params.subtaskId);
+
     if (!task) return res.status(404).json({ message: "Task not found" });
-
-    const subtask = task.subtasks.id(req.params.subtaskId);
-    if (!subtask) return res.status(404).json({ message: "Subtask not found" });
-
-    subtask.deleteOne();
-    await task.save();
 
     res.status(200).json({ message: "Subtask deleted successfully", task });
   } catch (error) {

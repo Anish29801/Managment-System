@@ -1,13 +1,21 @@
-import mongoose from "mongoose";
+import { initializeApp, getApps, applicationDefault } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
+import { getAuth } from "firebase-admin/auth";
+import { getStorage } from "firebase-admin/storage";
 
-const connectDB = async (mongoURI: string) => {
-  try {
-    await mongoose.connect(mongoURI);
-    console.log("MongoDB connected successfully");
-  } catch (error) {
-    console.error("MongoDB connection failed:", error);
+const initFirebase = () => {
+  if (getApps().length > 0) return;
 
-  }
+  // ADC reads credentials from:
+  //   1. GOOGLE_APPLICATION_CREDENTIALS env var  OR
+  //   2. gcloud auth application-default login
+  initializeApp({ credential: applicationDefault() });
+
+  console.log("Firebase Admin initialized via ADC");
 };
 
-export default connectDB;
+export const db = () => getFirestore();
+export const auth = () => getAuth();
+export const storage = () => getStorage();
+
+export default initFirebase;

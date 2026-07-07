@@ -18,6 +18,9 @@ pnpm-debug.log*
 .env.test.local
 .env.production.local
 
+# Firebase service account key (if using file-based approach)
+service-account.json
+
 # OS files
 .DS_Store
 Thumbs.db

@@ -1,0 +1,22 @@
+# Local Netlify folder
+.netlify
+
+# Agent/tool folders
+.omo/
+.opencode/
+.playwright-mcp/
+
+# Logs
+*.log
+
+# Firebase service account
+service-account.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE folders
+.vscode/
+.idea/
+*.swp
