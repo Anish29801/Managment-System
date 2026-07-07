@@ -81,7 +81,7 @@ export default function Navbar() {
                     >
                       {user.image ? (
                         <img
-                          src={`http://localhost:8080${user.image}`}
+                          src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}${user.image}`}
                           alt={user.name}
                           className="w-8 h-8 rounded-full object-cover border-2 border-blue-500"
                         />
@@ -162,7 +162,7 @@ export default function Navbar() {
                   >
                     {user.image ? (
                       <img
-                        src={`http://localhost:8080${user.image}`}
+                        src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}${user.image}`}
                         alt={user.name}
                         className="w-7 h-7 rounded-full object-cover border border-blue-500"
                       />

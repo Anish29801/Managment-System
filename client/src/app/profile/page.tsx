@@ -99,7 +99,7 @@ export default function ProfilePage() {
             <div className="relative group">
               {user.image ? (
                 <img
-                  src={`http://localhost:8080${user.image}`}
+                  src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}${user.image}`}
                   alt="Profile"
                   className="w-28 h-28 rounded-full object-cover border-4 border-blue-500"
                 />
