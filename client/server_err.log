@@ -1,0 +1,539 @@
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/app.ts(20,11): error TS2554: Expected 0 arguments, but got 1.
+
+    at createTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {
+  diagnosticCodes: [ 2554 ]
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/app.ts(20,11): error TS2554: Expected 0 arguments, but got 1.
+
+    at createTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {
+  diagnosticCodes: [ 2554 ]
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/app.ts(20,11): error TS2554: Expected 0 arguments, but got 1.
+
+    at createTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {
+  diagnosticCodes: [ 2554 ]
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/app.ts(20,11): error TS2554: Expected 0 arguments, but got 1.
+
+    at createTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {
+  diagnosticCodes: [ 2554 ]
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/routes/userRoutes.ts(42,38): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/routes/userRoutes.ts(42,46): error TS2339: Property 'select' does not exist on type 'Promise<IUser | null>'.
+src/routes/userRoutes.ts(67,36): error TS2339: Property 'findByIdAndUpdate' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(103,38): error TS2339: Property 'findByIdAndUpdate' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(134,37): error TS2339: Property 'findOne' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(141,25): error TS2351: This expression is not constructable.
+  Type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...' has no construct signatures.
+src/routes/userRoutes.ts(169,29): error TS2339: Property 'findOne' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(193,30): error TS2339: Property 'find' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(202,53): error TS2339: Property 'select' does not exist on type 'Promise<IUser | null>'.
+src/routes/userRoutes.ts(219,36): error TS2339: Property 'findByIdAndUpdate' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(235,36): error TS2339: Property 'findByIdAndUpdate' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(246,36): error TS2339: Property 'findByIdAndDelete' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+
+    at createTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {
+  diagnosticCodes: [
+    2345, 2339, 2339,
+    2339, 2339, 2351,
+    2339, 2339, 2339,
+    2339, 2339, 2339
+  ]
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/routes/userRoutes.ts(42,38): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/routes/userRoutes.ts(42,46): error TS2339: Property 'select' does not exist on type 'Promise<IUser | null>'.
+src/routes/userRoutes.ts(67,36): error TS2339: Property 'findByIdAndUpdate' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(103,38): error TS2339: Property 'findByIdAndUpdate' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(134,37): error TS2339: Property 'findOne' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(141,25): error TS2351: This expression is not constructable.
+  Type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...' has no construct signatures.
+src/routes/userRoutes.ts(169,29): error TS2339: Property 'findOne' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(193,30): error TS2339: Property 'find' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(202,53): error TS2339: Property 'select' does not exist on type 'Promise<IUser | null>'.
+src/routes/userRoutes.ts(219,36): error TS2339: Property 'findByIdAndUpdate' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(235,36): error TS2339: Property 'findByIdAndUpdate' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(246,36): error TS2339: Property 'findByIdAndDelete' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+
+    at createTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {
+  diagnosticCodes: [
+    2345, 2339, 2339,
+    2339, 2339, 2351,
+    2339, 2339, 2339,
+    2339, 2339, 2339
+  ]
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/routes/userRoutes.ts(42,38): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/routes/userRoutes.ts(42,46): error TS2339: Property 'select' does not exist on type 'Promise<IUser | null>'.
+src/routes/userRoutes.ts(67,36): error TS2339: Property 'findByIdAndUpdate' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(103,38): error TS2339: Property 'findByIdAndUpdate' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(134,37): error TS2339: Property 'findOne' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(141,25): error TS2351: This expression is not constructable.
+  Type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...' has no construct signatures.
+src/routes/userRoutes.ts(169,29): error TS2339: Property 'findOne' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(193,30): error TS2339: Property 'find' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(202,53): error TS2339: Property 'select' does not exist on type 'Promise<IUser | null>'.
+src/routes/userRoutes.ts(219,36): error TS2339: Property 'findByIdAndUpdate' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(235,36): error TS2339: Property 'findByIdAndUpdate' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+src/routes/userRoutes.ts(246,36): error TS2339: Property 'findByIdAndDelete' does not exist on type '{ findByEmail(email: string): Promise<IUser | null>; findById(id: string): Promise<IUser | null>; create(data: Omit<IUser, "id" | "createdAt" | "updatedAt">): Promise<...>; update(id: string, data: Partial<...>): Promise<...>; delete(id: string): Promise<...>; findAll(): Promise<...>; findByIdPublic(id: string): Pro...'.
+
+    at createTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {
+  diagnosticCodes: [
+    2345, 2339, 2339,
+    2339, 2339, 2351,
+    2339, 2339, 2339,
+    2339, 2339, 2339
+  ]
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/model/User.ts(7,31): error TS2694: Namespace '"C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index"' has no exported member 'firestore'.
+src/model/User.ts(22,37): error TS2694: Namespace '"C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index"' has no exported member 'firestore'.
+src/model/User.ts(39,30): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(50,29): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(57,26): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(60,24): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(61,24): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(68,57): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(72,17): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(78,17): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(84,30): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(90,29): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+
+    at createTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {
+  diagnosticCodes: [
+    2694, 2694, 2339,
+    2339, 2339, 2339,
+    2339, 2339, 2339,
+    2339, 2339, 2339
+  ]
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/model/User.ts(7,31): error TS2694: Namespace '"C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index"' has no exported member 'firestore'.
+src/model/User.ts(22,37): error TS2694: Namespace '"C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index"' has no exported member 'firestore'.
+src/model/User.ts(39,30): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(50,29): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(57,26): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(60,24): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(61,24): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(68,57): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(72,17): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(78,17): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(84,30): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+src/model/User.ts(90,29): error TS2339: Property 'firestore' does not exist on type 'typeof import("C:/Users/Anish/Desktop/Managment-System/server/node_modules/firebase-admin/lib/index")'.
+
+    at createTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {
+  diagnosticCodes: [
+    2694, 2694, 2339,
+    2339, 2339, 2339,
+    2339, 2339, 2339,
+    2339, 2339, 2339
+  ]
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\app\lifecycle.js:85
+            throw new error_1.FirebaseAppError({ code: error_1.AppErrorCode.NO_APP, message: errorMessage });
+                  ^
+FirebaseAppError: The default Firebase app does not exist. Make sure you call initializeApp() before using any of the Firebase services.
+    at AppStore.getApp (C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\app\lifecycle.js:85:19)
+    at getApp (C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\app\lifecycle.js:243:36)
+    at getFirestore (C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\firestore\index.js:51:90)
+    at Object.<anonymous> (C:\Users\Anish\Desktop\Managment-System\server\src\model\User.ts:5:31)
+    at Module._compile (node:internal/modules/cjs/loader:1812:14)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1618:23)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12) {
+  code: 'app/no-app',
+  codePrefix: 'app'
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\app\lifecycle.js:85
+            throw new error_1.FirebaseAppError({ code: error_1.AppErrorCode.NO_APP, message: errorMessage });
+                  ^
+FirebaseAppError: The default Firebase app does not exist. Make sure you call initializeApp() before using any of the Firebase services.
+    at AppStore.getApp (C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\app\lifecycle.js:85:19)
+    at getApp (C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\app\lifecycle.js:243:36)
+    at getFirestore (C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\firestore\index.js:51:90)
+    at Object.<anonymous> (C:\Users\Anish\Desktop\Managment-System\server\src\model\User.ts:5:31)
+    at Module._compile (node:internal/modules/cjs/loader:1812:14)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1618:23)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12) {
+  code: 'app/no-app',
+  codePrefix: 'app'
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\app\lifecycle.js:85
+            throw new error_1.FirebaseAppError({ code: error_1.AppErrorCode.NO_APP, message: errorMessage });
+                  ^
+FirebaseAppError: The default Firebase app does not exist. Make sure you call initializeApp() before using any of the Firebase services.
+    at AppStore.getApp (C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\app\lifecycle.js:85:19)
+    at getApp (C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\app\lifecycle.js:243:36)
+    at getFirestore (C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\firestore\index.js:51:90)
+    at Object.<anonymous> (C:\Users\Anish\Desktop\Managment-System\server\src\model\User.ts:5:31)
+    at Module._compile (node:internal/modules/cjs/loader:1812:14)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1618:23)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12) {
+  code: 'app/no-app',
+  codePrefix: 'app'
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\app\lifecycle.js:85
+            throw new error_1.FirebaseAppError({ code: error_1.AppErrorCode.NO_APP, message: errorMessage });
+                  ^
+FirebaseAppError: The default Firebase app does not exist. Make sure you call initializeApp() before using any of the Firebase services.
+    at AppStore.getApp (C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\app\lifecycle.js:85:19)
+    at getApp (C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\app\lifecycle.js:243:36)
+    at getFirestore (C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\firestore\index.js:51:90)
+    at Object.<anonymous> (C:\Users\Anish\Desktop\Managment-System\server\src\model\User.ts:5:31)
+    at Module._compile (node:internal/modules/cjs/loader:1812:14)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1618:23)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12) {
+  code: 'app/no-app',
+  codePrefix: 'app'
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/model/User.ts(41,8): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(51,33): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(58,30): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(73,21): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(79,21): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(85,34): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(91,33): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+
+    at createTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {
+  diagnosticCodes: [
+    2339, 2339,
+    2339, 2339,
+    2339, 2339,
+    2339
+  ]
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/model/User.ts(51,33): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(58,30): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(73,21): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(79,21): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(85,34): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(91,33): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+
+    at createTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {
+  diagnosticCodes: [ 2339, 2339, 2339, 2339, 2339, 2339 ]
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/model/User.ts(58,30): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(73,21): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(79,21): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+
+    at createTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {
+  diagnosticCodes: [ 2339, 2339, 2339 ]
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/model/User.ts(58,30): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(73,21): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(79,21): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+
+    at createTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {
+  diagnosticCodes: [ 2339, 2339, 2339 ]
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+src/model/User.ts(58,30): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(73,21): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+src/model/User.ts(79,21): error TS2339: Property 'collection' does not exist on type '() => Firestore'.
+
+    at createTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:859:12)
+    at reportTSError (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:863:19)
+    at getOutput (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1077:36)
+    at Object.compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1433:41)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1617:30)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19) {
+  diagnosticCodes: [ 2339, 2339, 2339 ]
+}
+C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\app\lifecycle.js:85
+            throw new error_1.FirebaseAppError({ code: error_1.AppErrorCode.NO_APP, message: errorMessage });
+                  ^
+FirebaseAppError: The default Firebase app does not exist. Make sure you call initializeApp() before using any of the Firebase services.
+    at AppStore.getApp (C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\app\lifecycle.js:85:19)
+    at getApp (C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\app\lifecycle.js:243:36)
+    at getFirestore (C:\Users\Anish\Desktop\Managment-System\server\node_modules\firebase-admin\lib\firestore\index.js:51:90)
+    at Object.<anonymous> (C:\Users\Anish\Desktop\Managment-System\server\src\model\config\conn.ts:17:31)
+    at Module._compile (node:internal/modules/cjs/loader:1812:14)
+    at Module.m._compile (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1618:23)
+    at node:internal/modules/cjs/loader:1943:10
+    at Object.require.extensions.<computed> [as .ts] (C:\Users\Anish\Desktop\Managment-System\server\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12) {
+  code: 'app/no-app',
+  codePrefix: 'app'
+}
+SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\Anish\Desktop\Managment-System\server\node_modules\body-parser\lib\types\json.js:77:19)
+    at C:\Users\Anish\Desktop\Managment-System\server\node_modules\body-parser\lib\read.js:123:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:228:14)
+    at invokeCallback (C:\Users\Anish\Desktop\Managment-System\server\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\Anish\Desktop\Managment-System\server\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\Anish\Desktop\Managment-System\server\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:508:28)
+    at IncomingMessage.emit (node:domain:489:12)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\Anish\Desktop\Managment-System\server\node_modules\body-parser\lib\types\json.js:77:19)
+    at C:\Users\Anish\Desktop\Managment-System\server\node_modules\body-parser\lib\read.js:123:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:228:14)
+    at invokeCallback (C:\Users\Anish\Desktop\Managment-System\server\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\Anish\Desktop\Managment-System\server\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\Anish\Desktop\Managment-System\server\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:508:28)
+    at IncomingMessage.emit (node:domain:489:12)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+Error: 9 FAILED_PRECONDITION: The query requires an index. That index is currently building and cannot be used yet. See its status here: https://console.firebase.google.com/v1/r/project/task-master-db-3956c/firestore/indexes?create_composite=Cl1wcm9qZWN0cy90YXNrLW1hc3Rlci1kYi0zOTU2Yy9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvdGFza3MvaW5kZXhlcy9DSUNBZ09qWGg0RUsQARoNCgljcmVhdGVkQnkQARoNCgljcmVhdGVkQXQQAhoMCghfX25hbWVfXxAC
+    at callErrorFromStatus (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@grpc\grpc-js\src\call.ts:84:17)
+    at Object.onReceiveStatus (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@grpc\grpc-js\src\client.ts:612:51)
+    at Object.onReceiveStatus (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@grpc\grpc-js\src\client-interceptors.ts:424:48)
+    at C:\Users\Anish\Desktop\Managment-System\server\node_modules\@grpc\grpc-js\src\resolving-call.ts:170:24
+    at processTicksAndRejections (node:internal/process/task_queues:85:11)
+for call at
+    at ServiceClientImpl.makeServerStreamRequest (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@grpc\grpc-js\src\client.ts:595:42)
+    at ServiceClientImpl.<anonymous> (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@grpc\grpc-js\src\make-client.ts:189:15)
+    at C:\Users\Anish\Desktop\Managment-System\server\node_modules\@google-cloud\firestore\build\src\v1\firestore_client.js:257:29
+    at C:\Users\Anish\Desktop\Managment-System\server\node_modules\google-gax\build\src\streamingCalls\streamingApiCaller.js:39:28
+    at C:\Users\Anish\Desktop\Managment-System\server\node_modules\google-gax\build\src\normalCalls\timeout.js:44:16
+    at Object.request (C:\Users\Anish\Desktop\Managment-System\server\node_modules\google-gax\build\src\streamingCalls\streaming.js:248:40)
+    at makeRequest (C:\Users\Anish\Desktop\Managment-System\server\node_modules\google-gax\node_modules\retry-request\index.js:159:28)
+    at retryRequest (C:\Users\Anish\Desktop\Managment-System\server\node_modules\google-gax\node_modules\retry-request\index.js:119:5)
+    at StreamProxy.setStream (C:\Users\Anish\Desktop\Managment-System\server\node_modules\google-gax\build\src\streamingCalls\streaming.js:239:37)
+    at StreamingApiCaller.call (C:\Users\Anish\Desktop\Managment-System\server\node_modules\google-gax\build\src\streamingCalls\streamingApiCaller.js:55:16)
+Caused by: Error
+    at QueryUtil._getResponse (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@google-cloud\firestore\build\src\reference\query-util.js:47:23)
+    at Query._getResponse (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@google-cloud\firestore\build\src\reference\query.js:905:32)
+    at Query._get (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@google-cloud\firestore\build\src\reference\query.js:898:35)
+    at C:\Users\Anish\Desktop\Managment-System\server\node_modules\@google-cloud\firestore\build\src\reference\query.js:866:43
+    at C:\Users\Anish\Desktop\Managment-System\server\node_modules\@google-cloud\firestore\build\src\telemetry\enabled-trace-util.js:125:30
+    at NoopContextManager.with (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@opentelemetry\api\src\context\NoopContextManager.ts:20:15)
+    at ContextAPI.with (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@opentelemetry\api\src\api\context.ts:68:42)
+    at NoopTracer.startActiveSpan (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@opentelemetry\api\src\trace\NoopTracer.ts:87:27)
+    at ProxyTracer.startActiveSpan (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@opentelemetry\api\src\trace\ProxyTracer.ts:51:20)
+    at EnabledTraceUtil.startActiveSpan (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@google-cloud\firestore\build\src\telemetry\enabled-trace-util.js:117:28) {
+  code: 9,
+  details: 'The query requires an index. That index is currently building and cannot be used yet. See its status here: https://console.firebase.google.com/v1/r/project/task-master-db-3956c/firestore/indexes?create_composite=Cl1wcm9qZWN0cy90YXNrLW1hc3Rlci1kYi0zOTU2Yy9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvdGFza3MvaW5kZXhlcy9DSUNBZ09qWGg0RUsQARoNCgljcmVhdGVkQnkQARoNCgljcmVhdGVkQXQQAhoMCghfX25hbWVfXxAC',
+  metadata: Metadata {
+    internalRepr: Map(1) { 'x-debug-tracking-id' => [Array] },
+    opaqueData: Map(0) {},
+    options: {}
+  }
+}
+Error: 9 FAILED_PRECONDITION: The query requires an index. That index is currently building and cannot be used yet. See its status here: https://console.firebase.google.com/v1/r/project/task-master-db-3956c/firestore/indexes?create_composite=Cl1wcm9qZWN0cy90YXNrLW1hc3Rlci1kYi0zOTU2Yy9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvdGFza3MvaW5kZXhlcy9DSUNBZ09qWGg0RUsQARoNCgljcmVhdGVkQnkQARoNCgljcmVhdGVkQXQQAhoMCghfX25hbWVfXxAC
+    at callErrorFromStatus (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@grpc\grpc-js\src\call.ts:84:17)
+    at Object.onReceiveStatus (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@grpc\grpc-js\src\client.ts:612:51)
+    at Object.onReceiveStatus (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@grpc\grpc-js\src\client-interceptors.ts:424:48)
+    at C:\Users\Anish\Desktop\Managment-System\server\node_modules\@grpc\grpc-js\src\resolving-call.ts:170:24
+    at processTicksAndRejections (node:internal/process/task_queues:85:11)
+for call at
+    at ServiceClientImpl.makeServerStreamRequest (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@grpc\grpc-js\src\client.ts:595:42)
+    at ServiceClientImpl.<anonymous> (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@grpc\grpc-js\src\make-client.ts:189:15)
+    at C:\Users\Anish\Desktop\Managment-System\server\node_modules\@google-cloud\firestore\build\src\v1\firestore_client.js:257:29
+    at C:\Users\Anish\Desktop\Managment-System\server\node_modules\google-gax\build\src\streamingCalls\streamingApiCaller.js:39:28
+    at C:\Users\Anish\Desktop\Managment-System\server\node_modules\google-gax\build\src\normalCalls\timeout.js:44:16
+    at Object.request (C:\Users\Anish\Desktop\Managment-System\server\node_modules\google-gax\build\src\streamingCalls\streaming.js:248:40)
+    at makeRequest (C:\Users\Anish\Desktop\Managment-System\server\node_modules\google-gax\node_modules\retry-request\index.js:159:28)
+    at retryRequest (C:\Users\Anish\Desktop\Managment-System\server\node_modules\google-gax\node_modules\retry-request\index.js:119:5)
+    at StreamProxy.setStream (C:\Users\Anish\Desktop\Managment-System\server\node_modules\google-gax\build\src\streamingCalls\streaming.js:239:37)
+    at StreamingApiCaller.call (C:\Users\Anish\Desktop\Managment-System\server\node_modules\google-gax\build\src\streamingCalls\streamingApiCaller.js:55:16)
+Caused by: Error
+    at QueryUtil._getResponse (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@google-cloud\firestore\build\src\reference\query-util.js:47:23)
+    at Query._getResponse (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@google-cloud\firestore\build\src\reference\query.js:905:32)
+    at Query._get (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@google-cloud\firestore\build\src\reference\query.js:898:35)
+    at C:\Users\Anish\Desktop\Managment-System\server\node_modules\@google-cloud\firestore\build\src\reference\query.js:866:43
+    at C:\Users\Anish\Desktop\Managment-System\server\node_modules\@google-cloud\firestore\build\src\telemetry\enabled-trace-util.js:125:30
+    at NoopContextManager.with (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@opentelemetry\api\src\context\NoopContextManager.ts:20:15)
+    at ContextAPI.with (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@opentelemetry\api\src\api\context.ts:68:42)
+    at NoopTracer.startActiveSpan (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@opentelemetry\api\src\trace\NoopTracer.ts:87:27)
+    at ProxyTracer.startActiveSpan (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@opentelemetry\api\src\trace\ProxyTracer.ts:51:20)
+    at EnabledTraceUtil.startActiveSpan (C:\Users\Anish\Desktop\Managment-System\server\node_modules\@google-cloud\firestore\build\src\telemetry\enabled-trace-util.js:117:28) {
+  code: 9,
+  details: 'The query requires an index. That index is currently building and cannot be used yet. See its status here: https://console.firebase.google.com/v1/r/project/task-master-db-3956c/firestore/indexes?create_composite=Cl1wcm9qZWN0cy90YXNrLW1hc3Rlci1kYi0zOTU2Yy9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvdGFza3MvaW5kZXhlcy9DSUNBZ09qWGg0RUsQARoNCgljcmVhdGVkQnkQARoNCgljcmVhdGVkQXQQAhoMCghfX25hbWVfXxAC',
+  metadata: Metadata {
+    internalRepr: Map(1) { 'x-debug-tracking-id' => [Array] },
+    opaqueData: Map(0) {},
+    options: {}
+  }
+}

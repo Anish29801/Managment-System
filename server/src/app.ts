@@ -1,4 +1,5 @@
 import express, { Application } from "express";
+import cors from "cors";
 import routes from "./routes";
 import dotenv from "dotenv";
 import initFirebase from "./model/config/conn";
@@ -12,6 +13,7 @@ const app: Application = express();
 // Initialize Firebase Admin
 initFirebase();
 
+app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:5173" }));
 app.use(express.json());
 
 // Serve uploaded files statically
